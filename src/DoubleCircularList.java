@@ -1,7 +1,7 @@
 public class DoubleCircularList {
     private Node head;
     private int size;
-    public LinkedList() {
+    public DoubleCircularList() {
         this.head = null;
         this.size = 0;
     }
