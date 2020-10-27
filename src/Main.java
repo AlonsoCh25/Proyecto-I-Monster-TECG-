@@ -1,10 +1,12 @@
 public class Main {
-    public static void main(String[] args) {
-        DoubleCircularList N = new DoubleCircularList();
-        N.insertFirst(9);
-        N.insertFirst(8);
-        N.insertFirst(7);
-        N.insertFirst(6);
-        N.displayList();
+    public static void main(String[] args) throws Exception {
+        int size = 9;
+        Stack s = new Stack(size);
+        for(int i = 1; i<size; i+=1){
+            s.push(i);
+        }
+        for(int i = 1; i<size; i+=1){
+            System.out.println(s.pop());
+        }
     }
 }
