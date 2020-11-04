@@ -26,5 +26,4 @@ public class Message {
     }
     public String getType(){return this.type;}
     public String getAction(){return this.action;}
-
 }

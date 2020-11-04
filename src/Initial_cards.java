@@ -176,13 +176,13 @@ public class Initial_cards {
         }
     }
     public void create_Deck() throws Exception {
-        for(int i = 0; i<16; i++){ ;
-            Deck.push(All_Cards.Data_find((int) (Math.random() * 38) + 1));
+        for(int i = 0; i<16; i++){
+            Deck.push(All_Cards.Data_find((int) (Math.random() * 37) + 1));
         }
     }
     public void create_Mass(){
         for(int i = 0; i<4; i++){ ;
-            Mass.insertFirst(All_Cards.Data_find((int) (Math.random() * 38) + 1));
+            Mass.insertFirst(All_Cards.Data_find((int) (Math.random() * 37) + 1));
         }
     }
     public DoubleCircularList getMass() {

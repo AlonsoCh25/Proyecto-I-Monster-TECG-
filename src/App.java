@@ -1,6 +1,5 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,7 +18,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.net.ServerSocket;
 
 public class App extends Application implements EventHandler<javafx.event.ActionEvent> {
     private Initial_cards InitCards;
@@ -36,12 +34,24 @@ public class App extends Application implements EventHandler<javafx.event.Action
     private float life;
     private float mana;
     private int port;
+    private float f_mana;
+    private float f_life;
+    private ProgressBar BarVida;
+    private ProgressBar BarMana;
+    private HBox containerVida;
+    private HBox containerMana;
     public App(String type, int port, String name) throws Exception {
+        this.containerVida = new HBox();
+        this.containerMana = new HBox();
         this.type = type;
         this.name = name;
         this.mana = 200;
+        this.f_mana = mana/1000;
         this.life = 1000;
+        this.f_life = life/1000;
         this.port = port;
+        this.BarMana = new ProgressBar(f_mana);
+        this.BarVida = new ProgressBar(f_life);
         if(type == "client"){
             this.client = new Client("127.0.0.1", this.port);
             Thread t_client = new Thread(client);
@@ -72,10 +82,8 @@ public class App extends Application implements EventHandler<javafx.event.Action
         Label L_Port = new Label("Port: " + Integer.toString(this.port));
         L_Port.setFont(new Font(25));
         L_Port.setTextFill(Color.web("#FFFFFF"));
-        HBox containerVida = new HBox();
-        float f_life = this.life/1000;
-        ProgressBar BarVida = new ProgressBar(f_life);
-        BarVida.setMinWidth(500);
+
+        this.BarVida.setMinWidth(500);
         Label labelvida = new Label("Life");
         labelvida.setFont(new Font(40));
         labelvida.setTextFill(Color.web("#008000"));
@@ -84,16 +92,11 @@ public class App extends Application implements EventHandler<javafx.event.Action
         HBox.setMargin(labelvida,new Insets(0,5,0,0));
         HBox.setMargin(BarVida,new Insets(20,0,0,0));
 
-        containerVida.getChildren().addAll(L_User, L_Port, labelvida,BarVida);
+        containerVida.getChildren().addAll(L_User, L_Port, labelvida,this.BarVida);
         containerVida.setPrefWidth(200);
         containerVida.setAlignment(Pos.TOP_LEFT);
 
-
-        HBox containerMana = new HBox();
-        float f_mana = this.mana/1000;
-        ProgressBar BarMana = new ProgressBar(f_mana);
-        System.out.println(f_mana);
-        BarMana.setMinWidth(500);
+        this.BarMana.setMinWidth(500);
         Label labelmana = new Label("Mana");
         labelmana.setFont(new Font(50));
         labelmana.setTextFill(Color.web("#DAA520"));
@@ -241,14 +244,35 @@ public class App extends Application implements EventHandler<javafx.event.Action
             if(data.getClass() == Secret.class){
                 Message message = new Message(String.valueOf(data.getClass()), ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
                 client.SendMessage(json.toJson(message));
+                this.mana -= ((Secret) data).getMana();
+                this.f_mana = this.mana/1000;
+                this.containerMana.getChildren().remove(BarMana);
+                System.out.println("s " + f_mana);
+                this.BarMana = new ProgressBar(f_mana);
+                this.BarMana.setMinWidth(500);
+                this.containerMana.getChildren().add(BarMana);
             }
             if(data.getClass() == Henchmen.class){
                 Message message = new Message(String.valueOf(data.getClass()), null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
                 client.SendMessage(json.toJson(message));
+                this.mana -= ((Henchmen) data).getMana();
+                this.f_mana = this.mana/1000;
+                System.out.println("H "+f_mana);
+                this.containerMana.getChildren().remove(BarMana);
+                this.BarMana = new ProgressBar(f_mana);
+                this.BarMana.setMinWidth(500);
+                this.containerMana.getChildren().add(BarMana);
             }
             if(data.getClass() == Spell.class){
                 Message message = new Message(String.valueOf(data.getClass()), ((Spell) data).getAction(), ((Spell) data).getMana(),0);
                 client.SendMessage(json.toJson(message));
+                this.mana -= ((Spell) data).getMana();
+                this.f_mana = this.mana/1000;
+                System.out.println("Spell" + f_mana);
+                this.containerMana.getChildren().remove(BarMana);
+                this.BarMana = new ProgressBar(f_mana);
+                this.BarMana.setMinWidth(500);
+                this.containerMana.getChildren().add(BarMana);
             }
 
         }
@@ -295,8 +319,16 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 if(this.client.getInMessage() != null){
                     this.Inmessage = this.client.getInMessage();
                     this.client.setInMessage(null);
-                    try {
+                    try{
                         JsonNode node = json.parsing(Inmessage);
+                        Message message = new Message(node.get("type").asText(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                        this.life -= message.getAttack();
+                        this.f_life = this.life/1000;
+                        System.out.println("Life " + f_life);
+                        this.containerVida.getChildren().remove(BarVida);
+                        this.BarVida = new ProgressBar(f_life);
+                        this.BarVida.setMinWidth(500);
+                        this.containerVida.getChildren().add(BarVida);
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();
                     }
@@ -306,9 +338,21 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 if(this.server.getInMessage() != null){
                     this.Inmessage = this.server.getInMessage();
                     this.server.setInMessage(null);
+                    try{
+                        JsonNode node = json.parsing(Inmessage);
+                        Message message = new Message(node.get("type").asText(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                        this.life -= message.getAttack();
+                        this.f_life = this.life/1000;
+                        System.out.println("Life " + f_life);
+                        this.containerVida.getChildren().remove(this.BarVida);
+                        this.BarVida = new ProgressBar(f_life);
+                        this.BarVida.setMinWidth(500);
+                        this.containerVida.getChildren().add(BarVida);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
     }
-
 }
