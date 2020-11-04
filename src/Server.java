@@ -39,11 +39,18 @@ public class Server implements Runnable{
         }
 
     }
+
+    public void setInMessage(String inMessage) {
+        this.InMessage = inMessage;
+    }
+
+    public String getInMessage() {
+        return InMessage;
+    }
     public void run() {
         while(this.Server == null){
             try{
                 this.Server = new ServerSocket(getPort());
-                System.out.println("Server connected to port " + getPort());
             } catch (Exception e) {
                 System.out.println(e);
                 increasePort();
@@ -53,7 +60,6 @@ public class Server implements Runnable{
             System.out.println("Waiting for a connection");
             try{
                 this.Client = this.Server.accept();
-                System.out.println("Client " + this.Client + "connected");
             } catch (IOException e) {
                 System.out.println(e);
             }

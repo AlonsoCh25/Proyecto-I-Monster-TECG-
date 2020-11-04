@@ -31,6 +31,14 @@ public class Client implements Runnable{
         }
 
     }
+    public String getInMessage() {
+        return InMessage;
+    }
+
+    public void setInMessage(String inMessage) {
+        this.InMessage = inMessage;
+    }
+
     public void run() {
         while (this.Client == null){
             try{

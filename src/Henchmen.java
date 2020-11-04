@@ -1,11 +1,20 @@
 public class Henchmen {
+    private String type;
     private int attack;
     private int mana;
     private String rute;
     public Henchmen(int attack, int mana, String rute){
+        this.type = type;
         this.attack = attack;
         this.mana = mana;
         this.rute = rute;
+    }
+
+    public String getType() {
+        return type;
+    }
+    public void setType(String type) {
+        this.type = type;
     }
     public int getMana() {
         return mana;

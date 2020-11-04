@@ -37,6 +37,7 @@ public class DoubleCircularList {
         this.last.setNext(newNode);
         newNode.setNext(this.head);
         this.last = newNode;
+        this.size++;
     }
     public void deleteFirst(){
         if(isEmpty() == false) {
