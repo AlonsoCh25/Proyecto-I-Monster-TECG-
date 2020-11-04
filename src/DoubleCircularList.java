@@ -95,6 +95,18 @@ public class DoubleCircularList {
         }
         return null;
     }
+    public Object Data_find(int position){
+        Node current = this.head;
+        for (int i = 1; i <= size(); i += 1) {
+            if (i == position) {
+                return current.getData();
+            }
+            else {
+                current = current.getNext();
+            }
+        }
+        return null;
+    }
     public Node delete(Object searchValue) {
         Node current = this.head;
         for (int i = 1; i <= size(); i += 1) {

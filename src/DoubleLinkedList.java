@@ -84,6 +84,20 @@ public class DoubleLinkedList {
         }
         return null;
     }
+    public Object Data_find(int position){
+        Node current = this.head;
+        int i = 1;
+        while (current != null) {
+            if (i == position) {
+                 return current.getData();
+            }
+            else {
+                current = current.getNext();
+                i++;
+            }
+        }
+        return null;
+    }
     public Node delete(Object searchValue) {
         Node current = this.head;
         while (current != null) {

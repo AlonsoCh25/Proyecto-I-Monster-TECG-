@@ -1,3 +1,4 @@
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -15,7 +16,20 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class App extends Application {
+    Initial_cards InitCards;
+    DoubleLinkedList History;
+    DoubleCircularList Mass;
+    Stack Deck;
 
+    public App() throws Exception {
+        this.InitCards = new Initial_cards();
+        this.InitCards.crete_All_cards();
+        this.InitCards.create_Mass();
+        this.InitCards.create_Deck();
+        this.Deck = InitCards.getDeck();
+        this.Mass = InitCards.getMass();
+
+    }
     @Override
     public void start(Stage primaryStage) {
 
@@ -50,7 +64,7 @@ public class App extends Application {
 
 
         VBox containerdeck = new VBox();
-        Image deck = new Image(getClass().getResourceAsStream("/images/Fondo2.jpg"));
+        Image deck = new Image(getClass().getResourceAsStream("/images/background_2.jpg"));
 
         ImageView Viewdeck = new ImageView(deck);
         Viewdeck.setFitHeight(400);
@@ -71,28 +85,29 @@ public class App extends Application {
 
 
         FlowPane containermanocartas = new FlowPane();
+        for(int i = 1; this.Mass.size()>=i; i++){
+            Object data = this.Mass.Data_find(i);
+            System.out.println(data);
+            if(data.getClass() == Spell.class){
+                System.out.println(((Spell) data).getRute());
+                Image carta1 = new Image(((Spell) data).getRute()+".jpg");
+                ImageView View1 = new ImageView(carta1);
+                containermanocartas.getChildren().add(View1);
+            }
+            if(data.getClass() == Henchmen.class){
+                System.out.println(((Henchmen) data).getRute());
+                Image carta1 = new Image(((Henchmen) data).getRute()+".jpg");
+                ImageView View1 = new ImageView(carta1);
+                containermanocartas.getChildren().add(View1);
+            }
+            if(data.getClass() == Secret.class){
+                System.out.println(((Secret) data).getRute());
+                Image carta1 = new Image(((Secret) data).getRute()+".jpg");
+                ImageView View1 = new ImageView(carta1);
+                containermanocartas.getChildren().add(View1);
+            }
 
-        Image carta1 = new Image(getClass().getResourceAsStream("/images/1.jpg"));
-        Image carta2 = new Image(getClass().getResourceAsStream("/images/2.jpg"));
-        Image carta3 = new Image(getClass().getResourceAsStream("/images/3.jpg"));
-        Image carta4 = new Image(getClass().getResourceAsStream("/imagenes/4.jpg"));
-        Image carta5 = new Image(getClass().getResourceAsStream("/imagenes/5.jpg"));
-        Image carta6 = new Image(getClass().getResourceAsStream("/imagenes/6.jpg"));
-        Image carta7 = new Image(getClass().getResourceAsStream("/imagenes/7.jpg"));
-        Image carta8 = new Image(getClass().getResourceAsStream("/imagenes/8.jpg"));
-        Image carta9 = new Image(getClass().getResourceAsStream("/imagenes/9.jpg"));
-        Image carta10 = new Image(getClass().getResourceAsStream("/imagenes/10.jpg"));
-
-        ImageView View1 = new ImageView(carta1);
-        ImageView View2 = new ImageView(carta2);
-        ImageView View3 = new ImageView(carta3);
-        ImageView View4 = new ImageView(carta4);
-        ImageView View5 = new ImageView(carta5);
-        ImageView View6 = new ImageView(carta6);
-        ImageView View7 = new ImageView(carta7);
-        ImageView View8 = new ImageView(carta8);
-        ImageView View9 = new ImageView(carta9);
-        ImageView View10 = new ImageView(carta10);
+        }
 
         containermanocartas.setOrientation(Orientation.HORIZONTAL);
         containermanocartas.setAlignment(Pos.CENTER);
@@ -101,11 +116,11 @@ public class App extends Application {
         /*containermanocartas.setBackground(new Background(new BackgroundFill(Color.web("#DAA520"),CornerRadii.EMPTY,Insets.EMPTY)));*/
 
 
-        BackgroundImage myBI= new BackgroundImage(new Image("/images/Fondo3.jpg",1200,900,false,true),
+        BackgroundImage myBI= new BackgroundImage(new Image("/images/background_3.jpg",1200,900,false,true),
         BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
         containermanocartas.setBackground(new Background(myBI));
-        containermanocartas.getChildren().addAll(View1,View2,View3,View4,View5,View6,View7,View8,View9,View10);
+        
 
         VBox containerextra = new VBox();
         containerextra.setPrefWidth(300);
@@ -140,7 +155,7 @@ public class App extends Application {
         root.setLeft(containerextra);
 
 
-        BackgroundImage FondoCentro= new BackgroundImage(new Image("/images/Fondo1.jpg",1800,1000,false,true),
+        BackgroundImage FondoCentro= new BackgroundImage(new Image("/images/background_1.jpg",1800,1000,false,true),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 
         root.setBackground(new Background(FondoCentro));

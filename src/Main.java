@@ -2,8 +2,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class Main {
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws Exception {
         //Inicia el servidor
+        Initial_cards init = new Initial_cards();
+        init.crete_All_cards();
+        DoubleLinkedList ListAll = init.getAll_Cards();
+        init.create_Deck();
+        init.create_Mass();
         Json json = new Json();
         Server Server = new Server();
         Thread server = new Thread(Server);
