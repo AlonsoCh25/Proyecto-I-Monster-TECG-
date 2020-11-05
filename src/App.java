@@ -308,7 +308,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 break;
         }
     }
-    }
     @Override
     public void handle(ActionEvent event) { }
     public boolean isEnough(Object data){
