@@ -57,19 +57,17 @@ public class Server implements Runnable{
             }
         }
         while (this.Client == null){
-            System.out.println("Waiting for a connection");
             try{
                 this.Client = this.Server.accept();
             } catch (IOException e) {
                 System.out.println(e);
             }
         }
-        System.out.println("executing instructions");
         while (isServerActive()){
             try{
                 IN = new DataInputStream(this.Client.getInputStream());
                 this.InMessage = IN.readUTF();
-                System.out.println("Message received by the server: " + this.InMessage);
+                setInMessage(this.InMessage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

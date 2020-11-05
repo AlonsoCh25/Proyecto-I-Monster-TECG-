@@ -50,8 +50,8 @@ public class Client implements Runnable{
         while (isClientActive()){
             try{
                 IN = new DataInputStream(this.Client.getInputStream());
-                InMessage = IN.readUTF();
-                System.out.println("Message received by the client: " + InMessage);
+                this.InMessage = IN.readUTF();
+                setInMessage(this.InMessage);
             } catch (Exception e) {
                 e.printStackTrace();
             }

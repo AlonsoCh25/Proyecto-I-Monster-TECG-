@@ -41,12 +41,14 @@ public class App extends Application implements EventHandler<javafx.event.Action
     private ProgressBar BarMana;
     private HBox containerVida;
     private HBox containerMana;
+    private boolean isMyTurn;
+
     public App(String type, int port, String name) throws Exception {
         this.containerVida = new HBox();
         this.containerMana = new HBox();
         this.type = type;
         this.name = name;
-        this.mana = 200;
+        this.mana = 1000;
         this.f_mana = mana/1000;
         this.life = 1000;
         this.f_life = life/1000;
@@ -54,6 +56,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
         this.BarMana = new ProgressBar(f_mana);
         this.BarVida = new ProgressBar(f_life);
         if(type == "client"){
+            this.isMyTurn = true;
             this.client = new Client("127.0.0.1", this.port);
             Thread t_client = new Thread(client);
             t_client.start();
@@ -61,11 +64,12 @@ public class App extends Application implements EventHandler<javafx.event.Action
             this.active = true;
         }
         if(type == "server"){
+            this.isMyTurn = false;
             this.server = new Server();
             Thread t_server = new Thread(server);
             t_server.start();
             this.port = server.getPort();
-            this.active = true;
+            this.active = false;
         }
         this.InitCards = new Initial_cards();
         this.InitCards.crete_All_cards();
@@ -130,33 +134,32 @@ public class App extends Application implements EventHandler<javafx.event.Action
         btndeck.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(Mass.size()< 10){
-                    Object card = Deck.pop();
-                    Mass.insertEnd(card);
-                    if(card.getClass() == Spell.class){
-                        Image carta1 = new Image(((Spell) card).getRute()+".jpg");
-                        ImageView View1 = new ImageView(carta1);
-                        containermanocartas.getChildren().add(View1);
-                    }
-                    if(card.getClass() == Henchmen.class){
-                        Image carta1 = new Image(((Henchmen) card).getRute()+".jpg");
-                        ImageView View1 = new ImageView(carta1);
-                        containermanocartas.getChildren().add(View1);
-                    }
-                    if(card.getClass() == Secret.class){
-                        Image carta1 = new Image(((Secret) card).getRute()+".jpg");
-                        ImageView View1 = new ImageView(carta1);
-                        containermanocartas.getChildren().add(View1);
+                if(isMyTurn()){
+                    if(Mass.size()< 10){
+                        Object card = Deck.pop();
+                        Mass.insertEnd(card);
+                        if(card.getClass() == Spell.class){
+                            Image carta1 = new Image(((Spell) card).getRute()+".jpg");
+                            ImageView View1 = new ImageView(carta1);
+                            containermanocartas.getChildren().add(View1);
+                        }
+                        if(card.getClass() == Henchmen.class){
+                            Image carta1 = new Image(((Henchmen) card).getRute()+".jpg");
+                            ImageView View1 = new ImageView(carta1);
+                            containermanocartas.getChildren().add(View1);
+                        }
+                        if(card.getClass() == Secret.class){
+                            Image carta1 = new Image(((Secret) card).getRute()+".jpg");
+                            ImageView View1 = new ImageView(carta1);
+                            containermanocartas.getChildren().add(View1);
+                        }
                     }
                 }
-                }
+            }
         });
         update_cards();
         Thread t = new Thread(this::receive_message);
         t.start();
-
-
-
 
         containermanocartas.setOrientation(Orientation.HORIZONTAL);
         containermanocartas.setAlignment(Pos.CENTER);
@@ -188,12 +191,18 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 int card_selected = Integer.parseInt(textCarta.getText());
                 textCarta.clear();
                 Object card = Mass.Data_find(card_selected);
-                Mass.delete(card);
-                update_cards();
-                try {
-                    sendMessage(card);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                if(isEnough(card)){
+                    if(isMyTurn()){
+                        setMyTurn(false);
+                        Mass.delete(card);
+                        update_cards();
+                        try {
+                            sendMessage(card);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             }
         });
@@ -239,78 +248,74 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
     @Override
     public void handle(ActionEvent event) { }
-    public void sendMessage(Object data) throws JsonProcessingException {
-        Json json = new Json();
-        if(type == "client"){
-            if(data.getClass() == Secret.class){
-                Message message = new Message(String.valueOf(data.getClass()), ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
-                client.SendMessage(json.toJson(message));
-                this.mana -= ((Secret) data).getMana();
-                this.f_mana = this.mana/1000;
-                this.containerMana.getChildren().remove(BarMana);
-                System.out.println("s " + f_mana);
-                this.BarMana = new ProgressBar(f_mana);
-                this.BarMana.setMinWidth(500);
-                this.containerMana.getChildren().add(BarMana);
+    public boolean isEnough(Object data){
+        if(data.getClass() == Spell.class){
+            if(((Spell) data).getMana() <= this.mana){
+                return true;
+            }else{
+                return false;
             }
-            if(data.getClass() == Henchmen.class){
-                Message message = new Message(String.valueOf(data.getClass()), null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
-                client.SendMessage(json.toJson(message));
-                this.mana -= ((Henchmen) data).getMana();
-                this.f_mana = this.mana/1000;
-                System.out.println("H "+f_mana);
-                this.containerMana.getChildren().remove(BarMana);
-                this.BarMana = new ProgressBar(f_mana);
-                this.BarMana.setMinWidth(500);
-                this.containerMana.getChildren().add(BarMana);
+        }
+        if(data.getClass() == Henchmen.class){
+            if(((Henchmen) data).getMana() <= this.mana){
+                return true;
+            }else{
+                return false;
             }
-            if(data.getClass() == Spell.class){
-                Message message = new Message(String.valueOf(data.getClass()), ((Spell) data).getAction(), ((Spell) data).getMana(),0);
-                client.SendMessage(json.toJson(message));
-                this.mana -= ((Spell) data).getMana();
-                this.f_mana = this.mana/1000;
-                System.out.println("Spell" + f_mana);
-                this.containerMana.getChildren().remove(BarMana);
-                this.BarMana = new ProgressBar(f_mana);
-                this.BarMana.setMinWidth(500);
-                this.containerMana.getChildren().add(BarMana);
+        }
+        if(data.getClass() == Secret.class){
+            if(((Secret) data).getMana() <= this.mana){
+                return true;
+            }else{
+                return false;
             }
 
         }
-        if(type == "server"){
-            if(data.getClass() == Secret.class){
-                Message message = new Message(String.valueOf(data.getClass()), ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
-                server.SendMessage(json.toJson(message));
-                this.mana -= ((Secret) data).getMana();
-                this.f_mana = this.mana/1000;
-                this.containerMana.getChildren().remove(BarMana);
-                System.out.println("s " + f_mana);
-                this.BarMana = new ProgressBar(f_mana);
-                this.BarMana.setMinWidth(500);
-                this.containerMana.getChildren().add(BarMana);
+        return false;
+    }
+    public void sendMessage(Object data) throws JsonProcessingException {
+        Json json = new Json();
+        Message message;
+            if(type == "client"){
+                if(data.getClass() == Secret.class){
+                    message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
+                    client.SendMessage(json.toJson(message));
+                    setMana(((Secret) data).getMana());
+                    setMyTurn(false);
+                }
+                if(data.getClass() == Henchmen.class){
+                    message = new Message("Henchmen", null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
+                    client.SendMessage(json.toJson(message));
+                    setMana(((Henchmen) data).getMana());
+                    setMyTurn(false);
+                }
+                if(data.getClass() == Spell.class){
+                    message = new Message("Spell", ((Spell) data).getAction(), ((Spell) data).getMana(),0);
+                    client.SendMessage(json.toJson(message));
+                    setMana(((Spell) data).getMana());
+                    setMyTurn(false);
+                }
+
             }
-            if(data.getClass() == Henchmen.class){
-                Message message = new Message(String.valueOf(data.getClass()), null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
-                server.SendMessage(json.toJson(message));
-                this.mana -= ((Henchmen) data).getMana();
-                this.f_mana = this.mana/1000;
-                System.out.println("H "+f_mana);
-                this.containerMana.getChildren().remove(BarMana);
-                this.BarMana = new ProgressBar(f_mana);
-                this.BarMana.setMinWidth(500);
-                this.containerMana.getChildren().add(BarMana);
-            }
-            if(data.getClass() == Spell.class){
-                Message message = new Message(String.valueOf(data.getClass()), ((Spell) data).getAction(), ((Spell) data).getMana(),0);
-                server.SendMessage(json.toJson(message));
-                this.mana -= ((Spell) data).getMana();
-                this.f_mana = this.mana/1000;
-                System.out.println("Spell" + f_mana);
-                this.containerMana.getChildren().remove(BarMana);
-                this.BarMana = new ProgressBar(f_mana);
-                this.BarMana.setMinWidth(500);
-                this.containerMana.getChildren().add(BarMana);
-            }
+            if(type == "server"){
+                if(data.getClass() == Secret.class){
+                    message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
+                    server.SendMessage(json.toJson(message));
+                    setMana(((Secret) data).getMana());
+                    setMyTurn(false);
+                }
+                if(data.getClass() == Henchmen.class){
+                    message = new Message("Henchmen", null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
+                    server.SendMessage(json.toJson(message));
+                    setMana(((Henchmen) data).getMana());
+                    setMyTurn(false);
+                }
+                if(data.getClass() == Spell.class){
+                    message = new Message("Spell", ((Spell) data).getAction(), ((Spell) data).getMana(),0);
+                    server.SendMessage(json.toJson(message));
+                    setMana(((Spell) data).getMana());
+                    setMyTurn(false);
+                }
         }
     }
     public void update_cards(){
@@ -334,58 +339,148 @@ public class App extends Application implements EventHandler<javafx.event.Action
             }
         }
     }
+    public void setMana(int mana){
+        this.mana -= mana;
+        this.f_mana = this.mana/1000;
+        this.containerMana.getChildren().remove(BarMana);
+        this.BarMana = new ProgressBar(f_mana);
+        this.BarMana.setMinWidth(500);
+        this.containerMana.getChildren().add(BarMana);
+        containerMana.setPrefWidth(200);
+        containerMana.setAlignment(Pos.CENTER);
+    }
     public void setDamage(int damage){
+        if((this.life-(damage))<=1000){
+            System.out.println("IF");
+            this.life -= damage;
+            this.f_life = this.life/1000;
+            this.containerVida.getChildren().remove(BarVida);
+            this.BarVida = new ProgressBar(f_life);
+            this.BarVida.setMinWidth(500);
+            this.containerVida.getChildren().add(BarVida);
+            containerVida.setPrefWidth(200);
+            containerVida.setAlignment(Pos.TOP_LEFT);
+        }else{
+            System.out.println("Else");
+            this.life = 1000;
+            this.f_life = this.life/1000;
+            this.containerVida.getChildren().remove(BarVida);
+            this.BarVida = new ProgressBar(f_life);
+            this.BarVida.setMinWidth(500);
+            this.containerVida.getChildren().add(BarVida);
+            containerVida.setPrefWidth(200);
+            containerVida.setAlignment(Pos.TOP_LEFT);
+        }
 
-        this.life -= damage;
-        this.f_life = this.life/1000;
-        System.out.println("Life " + f_life);
-        this.containerVida.getChildren().remove(BarVida);
-        this.BarVida = new ProgressBar(f_life);
-        this.BarVida.setMinWidth(500);
-        this.containerVida.getChildren().add(BarVida);
 
     }
     public void receive_message(){
         while (this.active){
-
             Json json = new Json();
-            if(type == "client"){
-                if(this.client.getInMessage() != null){
+            if(type == "client") {
+                if (this.client.getInMessage() != null) {
                     this.Inmessage = this.client.getInMessage();
                     this.client.setInMessage(null);
-                    try{
-                        JsonNode node = json.parsing(Inmessage);
-                        Message message = new Message(node.get("type").asText(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDamage(message.getAttack());
-                            }
-                        });
-
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
             if(type == "server"){
-                if(this.server.getInMessage() != null){
+                if(this.server.getInMessage() != null) {
                     this.Inmessage = this.server.getInMessage();
                     this.server.setInMessage(null);
-                    try{
-                        JsonNode node = json.parsing(Inmessage);
-                        Message message = new Message(node.get("type").asText(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                }
+            }
+            setMyTurn(true);
+            if(Inmessage!=null){
+                System.out.println(Inmessage);
+                try{
+                    JsonNode node = json.parsing(Inmessage);
+                    Message message = new Message(node.get("type").textValue(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                    if(message.getType().equals("Henchmen")){
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
                                 setDamage(message.getAttack());
                             }
                         });
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
                     }
+                    if(message.getType().equals("Secret")){
+                        switch (message.getAction()){
+                            case "-10%":
+                                break;
+                            case "-10m":
+                                break;
+                            case "-30%":
+                                break;
+                            case "d_card":
+                                break;
+                            case "+lastM":
+                                //No Afecta al contrincante
+                                break;
+                            case "E_250":
+                                //No Afecta al contrincante
+                                break;
+                            case "doubleM":
+                                //No Afecta al contrincante
+                                break;
+                            case "big_damage":
+                                break;
+                            case "c_mass":
+                                break;
+                            case "n_damage":
+                                //No Afecta al contrincante
+                                break;
+                        }
+                    }
+                    if(message.getType().equals("Spell")){
+                        switch (message.getAction()){
+                            case "r_damage":
+                                //No Afecta al contrincante
+                                break;
+                            case "v_+50%":
+                                //No Afecta al contrincante
+                                break;
+                            case "p_4cards":
+                                //No Afecta al contrincante
+                                break;
+                            case "r_card":
+                                break;
+                            case "s_card":
+                                break;
+                            case "shield":
+                                //No Afecta al contrincante
+                                break;
+                            case "freeze_x1":
+                                break;
+                            case "-damage":
+                                //No Afecta al contrincante
+                                break;
+                            case "freeze_x2":
+                                break;
+                            case "n_shield":
+                                break;
+                            case "v_+25%":
+                                //No Afecta al contrincante
+                                break;
+                            case "+100m":
+                                //No Afecta al contrincante
+                                break;
+                            case "p_3cards":
+                                //No Afecta al contrincante
+                                break;
+                        }
+                    }
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
                 }
             }
+            this.Inmessage = null;
+
         }
+    }
+    public boolean isMyTurn() {
+        return isMyTurn;
+    }
+    public void setMyTurn(boolean myTurn) {
+        this.isMyTurn = myTurn;
     }
 }

@@ -14,7 +14,12 @@ public class Json {
     public JsonNode parsing(String string) throws JsonProcessingException {
         return ObjectMapper.readTree(string);
     }
-    public String toJson(Object data) throws JsonProcessingException { ;
-        return ObjectMapper.writeValueAsString(data);
+    public String toJson(Object data){
+        try{
+            return ObjectMapper.writeValueAsString(data);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
