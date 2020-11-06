@@ -441,13 +441,15 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
+                    System.out.println(((Secret) data).getMana());
                     setMana(((Secret) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Henchmen.class){
-                    message = new Message("Henchmen", null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
+                    message = new Message("Henchmen", "null", ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
+                    System.out.println(((Henchmen) data).getMana());
                     setMana(((Henchmen) data).getMana());
                     setMyTurn(false);
                 }
@@ -455,6 +457,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     message = new Message("Spell", ((Spell) data).getAction(), ((Spell) data).getMana(),0);
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
+                    System.out.println(((Spell) data).getMana());
                     setMana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
