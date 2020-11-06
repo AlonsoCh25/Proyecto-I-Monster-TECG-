@@ -69,7 +69,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
             Thread t_server = new Thread(server);
             t_server.start();
             this.port = server.getPort();
-            this.active = false;
+            this.active = true;
         }
         this.InitCards = new Initial_cards();
         this.InitCards.crete_All_cards();
@@ -202,7 +202,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                             e.printStackTrace();
                         }
                     }
-
                 }
             }
         });
@@ -246,7 +245,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
         launch(args);
     }
     //Acciones del que envia los mensajes
-    public void Action(String action){
+    public void Action_send(String action){
         switch (action){
             case "-10%":
                 break;
@@ -306,10 +305,85 @@ public class App extends Application implements EventHandler<javafx.event.Action
             case "p_3cards":
                 //No Afecta al contrincante
                 break;
+
+            }
+    }
+    public void Action_received(String action, int attack){
+        if(action.equals("null")){
+            if(attack > 0){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setDamage(attack);
+                    }
+                });
+            }
+        }else{
+            switch (action){
+                case "-10%":
+                    break;
+                case "-10m":
+                    break;
+                case "-30%":
+                    break;
+                case "d_card":
+                    break;
+                case "+lastM":
+                    //No Afecta al contrincante
+                    break;
+                case "E_250":
+                    //No Afecta al contrincante
+                    break;
+                case "doubleM":
+                    //No Afecta al contrincante
+                    break;
+                case "big_damage":
+                    break;
+                case "c_mass":
+                    break;
+                case "n_damage":
+                    //No Afecta al contrincante
+                    break;
+                case "r_damage":
+                    //No Afecta al contrincante
+                    break;
+                case "v_+50%":
+                    //No Afecta al contrincante
+                    break;
+                case "p_4cards":
+                    //No Afecta al contrincante
+                    break;
+                case "r_card":
+                    break;
+                case "s_card":
+                    break;
+                case "shield":
+                    //No Afecta al contrincante
+                    break;
+                case "freeze_x1":
+                    break;
+                case "-damage":
+                    //No Afecta al contrincante
+                    break;
+                case "freeze_x2":
+                    break;
+                case "n_shield":
+                    break;
+                case "v_+25%":
+                    //No Afecta al contrincante
+                    break;
+                case "+100m":
+                    //No Afecta al contrincante
+                    break;
+                case "p_3cards":
+                    //No Afecta al contrincante
+                    break;
+            }
         }
     }
     @Override
     public void handle(ActionEvent event) { }
+    public boolean isActive(){return this.active;}
     public boolean isEnough(Object data){
         if(data.getClass() == Spell.class){
             if(((Spell) data).getMana() <= this.mana){
@@ -342,21 +416,21 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 if(data.getClass() == Secret.class){
                     message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
                     client.SendMessage(json.toJson(message));
-                    Action(message.getAction());
+                    Action_send(message.getAction());
                     setMana(((Secret) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Henchmen.class){
-                    message = new Message("Henchmen", null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
+                    message = new Message("Henchmen", "null", ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
                     client.SendMessage(json.toJson(message));
-                    Action(message.getAction());
+                    Action_send(message.getAction());
                     setMana(((Henchmen) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Spell.class){
                     message = new Message("Spell", ((Spell) data).getAction(), ((Spell) data).getMana(),0);
                     client.SendMessage(json.toJson(message));
-                    Action(message.getAction());
+                    Action_send(message.getAction());
                     setMana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
@@ -366,21 +440,21 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 if(data.getClass() == Secret.class){
                     message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
                     server.SendMessage(json.toJson(message));
-                    Action(message.getAction());
+                    Action_send(message.getAction());
                     setMana(((Secret) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Henchmen.class){
                     message = new Message("Henchmen", null, ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
                     server.SendMessage(json.toJson(message));
-                    Action(message.getAction());
+                    Action_send(message.getAction());
                     setMana(((Henchmen) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Spell.class){
                     message = new Message("Spell", ((Spell) data).getAction(), ((Spell) data).getMana(),0);
                     server.SendMessage(json.toJson(message));
-                    Action(message.getAction());
+                    Action_send(message.getAction());
                     setMana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
@@ -419,7 +493,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
     }
     public void setDamage(int damage){
         if((this.life-(damage))<=1000){
-            System.out.println("IF");
+            System.out.println("IF " + this.type);
             this.life -= damage;
             this.f_life = this.life/1000;
             this.containerVida.getChildren().remove(BarVida);
@@ -443,107 +517,32 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
     }
     public void receive_message(){
-        while (this.active){
+        while (isActive()){
             Json json = new Json();
-            if(type == "client") {
+            if(type.equals("client")) {
                 if (this.client.getInMessage() != null) {
                     this.Inmessage = this.client.getInMessage();
                     this.client.setInMessage(null);
                 }
             }
-            if(type == "server"){
+            if(type.equals("server")){
                 if(this.server.getInMessage() != null) {
                     this.Inmessage = this.server.getInMessage();
                     this.server.setInMessage(null);
                 }
             }
-            setMyTurn(true);
             if(Inmessage!=null){
                 System.out.println(Inmessage);
                 try{
                     JsonNode node = json.parsing(Inmessage);
                     Message message = new Message(node.get("type").textValue(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
-                    if(message.getType().equals("Henchmen")){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                setDamage(message.getAttack());
-                            }
-                        });
-                    }
-                    //Acciones del que recibe los mensajes
-                    if(message.getType().equals("Secret")){
-                        switch (message.getAction()){
-                            case "-10%":
-                                break;
-                            case "-10m":
-                                break;
-                            case "-30%":
-                                break;
-                            case "d_card":
-                                break;
-                            case "+lastM":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "E_250":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "doubleM":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "big_damage":
-                                break;
-                            case "c_mass":
-                                break;
-                            case "n_damage":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                        }
-                    }
-                    if(message.getType().equals("Spell")){
-                        switch (message.getAction()){
-                            case "r_damage":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "v_+50%":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "p_4cards":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "r_card":
-                                break;
-                            case "s_card":
-                                break;
-                            case "shield":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "freeze_x1":
-                                break;
-                            case "-damage":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "freeze_x2":
-                                break;
-                            case "n_shield":
-                                break;
-                            case "v_+25%":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "+100m":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                            case "p_3cards":
-                                //No Afecta al usuario,solo al que lo envia
-                                break;
-                        }
-                    }
+                    Action_received(message.getAction(), message.getAttack());
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
+                this.Inmessage = null;
+                setMyTurn(true);
             }
-            this.Inmessage = null;
-
         }
     }
     public boolean isMyTurn() {

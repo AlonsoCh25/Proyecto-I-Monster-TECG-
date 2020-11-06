@@ -9,7 +9,6 @@ public class Spell {
         this.mana = mana;
         this.rute = rute;
     }
-
     public int getMana() {
         return mana;
     }
