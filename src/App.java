@@ -34,27 +34,47 @@ public class App extends Application implements EventHandler<javafx.event.Action
     private boolean active;
     private float life;
     private float mana;
+    private float lifead;
+    private float manaad;
+    private Label labelvidaAd;
+    private Label labelmanaAd;
     private int port;
     private float f_mana;
     private float f_life;
+    private float f_lifead;
+    private float f_manaad;
     private ProgressBar BarVida;
     private ProgressBar BarMana;
+    private ProgressBar BarVidaAd;
+    private ProgressBar BarManaAd;
     private HBox containerVida;
     private HBox containerMana;
+    private HBox containerVidaAd;
+    private HBox containerManaAd;
     private boolean isMyTurn;
 
     public App(String type, int port, String name) throws Exception {
         this.containerVida = new HBox();
         this.containerMana = new HBox();
+        this.containerVidaAd = new HBox();
+        this.containerManaAd = new HBox();
         this.type = type;
         this.name = name;
         this.mana = 1000;
         this.f_mana = mana/1000;
         this.life = 1000;
         this.f_life = life/1000;
+        this.manaad = 1000;
+        this.f_manaad = manaad/1000;
+        this.lifead = 1000;
+        this.f_lifead = lifead/1000;
+        this.labelvidaAd = new Label("Life adversary");
+        this.labelmanaAd = new Label("Mana adversary");
         this.port = port;
         this.BarMana = new ProgressBar(f_mana);
         this.BarVida = new ProgressBar(f_life);
+        this.BarManaAd = new ProgressBar(f_manaad);
+        this.BarVidaAd = new ProgressBar(f_lifead);
         if(type == "client"){
             this.isMyTurn = true;
             this.client = new Client("127.0.0.1", this.port);
@@ -93,11 +113,17 @@ public class App extends Application implements EventHandler<javafx.event.Action
         labelvida.setFont(new Font(40));
         labelvida.setTextFill(Color.web("#008000"));
         containerVida.setMargin(L_User, new Insets(5,10,0,0));
-        containerVida.setMargin(L_Port, new Insets(5,100,0,0));
-        HBox.setMargin(labelvida,new Insets(0,5,0,0));
-        HBox.setMargin(BarVida,new Insets(20,0,0,0));
+        containerVida.setMargin(L_Port, new Insets(5,280,0,0));
+        HBox.setMargin(labelvida,new Insets(0,70,0,0));
+        HBox.setMargin(BarVida,new Insets(20,250,0,0));
 
-        containerVida.getChildren().addAll(L_User, L_Port, labelvida,this.BarVida);
+        this.BarVidaAd.setMinWidth(100);
+        this.labelvidaAd.setFont(new Font(30));
+        this.labelvidaAd.setTextFill(Color.web("#008000"));
+        HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
+        HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
+
+        containerVida.getChildren().addAll(L_User, L_Port, labelvida,this.BarVida,labelvidaAd,this.BarVidaAd);
         containerVida.setPrefWidth(200);
         containerVida.setAlignment(Pos.TOP_LEFT);
 
@@ -105,11 +131,18 @@ public class App extends Application implements EventHandler<javafx.event.Action
         Label labelmana = new Label("Mana");
         labelmana.setFont(new Font(50));
         labelmana.setTextFill(Color.web("#DAA520"));
-        HBox.setMargin(labelmana,new Insets(0,70,0,0));
-        HBox.setMargin(BarMana,new Insets(0,100,0,0));
-        containerMana.getChildren().addAll(labelmana,BarMana);
+        HBox.setMargin(labelmana,new Insets(0,70,0,500));
+        HBox.setMargin(BarMana,new Insets(25,215,0,0));
+
+        this.BarManaAd.setMinWidth(100);
+        this.labelmanaAd.setFont(new Font(30));
+        this.labelmanaAd.setTextFill(Color.web("#DAA520"));
+        HBox.setMargin(labelmanaAd, new Insets(10,30,0,0));
+        HBox.setMargin(BarManaAd, new Insets(25,0,0,0));
+
+        containerMana.getChildren().addAll(labelmana,BarMana,labelmanaAd,this.BarManaAd);
         containerMana.setPrefWidth(200);
-        containerMana.setAlignment(Pos.CENTER);
+        containerMana.setAlignment(Pos.TOP_LEFT);
 
 
         VBox containerdeck = new VBox();
@@ -488,11 +521,21 @@ public class App extends Application implements EventHandler<javafx.event.Action
         this.mana -= mana;
         this.f_mana = this.mana/1000;
         this.containerMana.getChildren().remove(BarMana);
+        this.containerMana.getChildren().remove(labelmanaAd);
+        this.containerMana.getChildren().remove(BarManaAd);
         this.BarMana = new ProgressBar(f_mana);
+        this.labelmanaAd = new Label("Mana Adversary");
+        this.labelmanaAd.setFont(new Font(30));
+        this.labelmanaAd.setTextFill(Color.web("#DAA520"));
+        this.BarManaAd = new ProgressBar(f_manaad);
         this.BarMana.setMinWidth(500);
-        this.containerMana.getChildren().add(BarMana);
+        this.BarManaAd.setMinWidth(100);
+        HBox.setMargin(BarMana,new Insets(25,215,0,0));
+        HBox.setMargin(labelmanaAd, new Insets(10,30,0,0));
+        HBox.setMargin(BarManaAd, new Insets(25,0,0,0));
+        this.containerMana.getChildren().addAll(BarMana,labelmanaAd,BarManaAd);
         containerMana.setPrefWidth(200);
-        containerMana.setAlignment(Pos.CENTER);
+        containerMana.setAlignment(Pos.TOP_LEFT);
     }
     public void setDamage(int damage){
         if((this.life-(damage))<=1000){
@@ -500,9 +543,19 @@ public class App extends Application implements EventHandler<javafx.event.Action
             this.life -= damage;
             this.f_life = this.life/1000;
             this.containerVida.getChildren().remove(BarVida);
+            this.containerVida.getChildren().remove(labelvidaAd);
+            this.containerVida.getChildren().remove(BarVidaAd);
             this.BarVida = new ProgressBar(f_life);
+            this.labelvidaAd = new Label("Life Adversary");
+            this.labelvidaAd.setFont(new Font(30));
+            this.labelvidaAd.setTextFill(Color.web("#008000"));
+            this.BarVidaAd = new ProgressBar(f_lifead);
             this.BarVida.setMinWidth(500);
-            this.containerVida.getChildren().add(BarVida);
+            this.BarVidaAd.setMinWidth(100);
+            HBox.setMargin(BarVida,new Insets(20,250,0,0));
+            HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
+            HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
+            this.containerVida.getChildren().addAll(BarVida,labelvidaAd,BarVidaAd);
             containerVida.setPrefWidth(200);
             containerVida.setAlignment(Pos.TOP_LEFT);
         }else{
@@ -510,9 +563,19 @@ public class App extends Application implements EventHandler<javafx.event.Action
             this.life = 1000;
             this.f_life = this.life/1000;
             this.containerVida.getChildren().remove(BarVida);
+            this.containerVida.getChildren().remove(labelvidaAd);
+            this.containerVida.getChildren().remove(BarVidaAd);
             this.BarVida = new ProgressBar(f_life);
+            this.labelvidaAd = new Label("Life Adversary");
+            this.labelvidaAd.setFont(new Font(30));
+            this.labelvidaAd.setTextFill(Color.web("#008000"));
+            this.BarVidaAd = new ProgressBar(f_lifead);
             this.BarVida.setMinWidth(500);
-            this.containerVida.getChildren().add(BarVida);
+            this.BarVidaAd.setMinWidth(100);
+            HBox.setMargin(BarVida,new Insets(20,250,0,0));
+            HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
+            HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
+            this.containerVida.getChildren().addAll(BarVida,BarVidaAd);
             containerVida.setPrefWidth(200);
             containerVida.setAlignment(Pos.TOP_LEFT);
         }
