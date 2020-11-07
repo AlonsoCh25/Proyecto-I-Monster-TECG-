@@ -146,7 +146,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
 
         VBox containerdeck = new VBox();
-        Image deck = new Image(getClass().getResourceAsStream("/images/background_2.jpg"));
+        Image deck = new Image(getClass().getResourceAsStream("/images/Fondo Deck.jpg"));
 
         ImageView Viewdeck = new ImageView(deck);
         Viewdeck.setFitHeight(400);
