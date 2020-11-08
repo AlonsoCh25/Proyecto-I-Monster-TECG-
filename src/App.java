@@ -222,6 +222,23 @@ public class App extends Application implements EventHandler<javafx.event.Action
             @Override
             public void handle(javafx.event.ActionEvent event) {
                 int card_selected = Integer.parseInt(textCarta.getText());
+                if(card_selected == 0){
+                    Json json = new Json();
+                    if (type == "client"){
+                        Message message = new Message("Henchmen", "null", 0, 0);
+                        client.SendMessage(json.toJson(message));
+                        Action_send(message.getAction());
+                        setMana(0);
+                        setMyTurn(false);
+                    }
+                    if (type == "server"){
+                        Message message = new Message("Henchmen","null", 0, 0);
+                        server.SendMessage(json.toJson(message));
+                        Action_send(message.getAction());
+                        setMana(0);
+                        setMyTurn(false);
+                    }
+                }
                 textCarta.clear();
                 Object card = Mass.Data_find(card_selected);
                 if(isEnough(card)){
