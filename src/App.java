@@ -146,7 +146,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
 
         VBox containerdeck = new VBox();
-        Image deck = new Image(getClass().getResourceAsStream("/images/Fondo Deck.jpg"));
+        Image deck = new Image(getClass().getResourceAsStream("/images/background_2.jpg"));
 
         ImageView Viewdeck = new ImageView(deck);
         Viewdeck.setFitHeight(400);
@@ -223,36 +223,35 @@ public class App extends Application implements EventHandler<javafx.event.Action
             public void handle(javafx.event.ActionEvent event) {
                 int card_selected = Integer.parseInt(textCarta.getText());
                 if(card_selected == 0){
-                    Json json = new Json();
-                    if (type == "client"){
-                        Message message = new Message("Henchmen", "null", 0, 0);
-                        client.SendMessage(json.toJson(message));
-                        Action_send(message.getAction());
-                        setMana(0);
+                    if (type.equals("client")){
                         setMyTurn(false);
+                        textCarta.clear();
+                        client.SendMessage("null");
                     }
-                    if (type == "server"){
-                        Message message = new Message("Henchmen","null", 0, 0);
-                        server.SendMessage(json.toJson(message));
-                        Action_send(message.getAction());
-                        setMana(0);
+                    if(type.equals("server")){
                         setMyTurn(false);
+                        textCarta.clear();
+                        server.SendMessage("null");
                     }
-                }
-                textCarta.clear();
-                Object card = Mass.Data_find(card_selected);
-                if(isEnough(card)){
-                    if(isMyTurn()){
-                        setMyTurn(false);
-                        Mass.delete(card);
-                        update_cards();
-                        try {
-                            sendMessage(card);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                }else{
+                    textCarta.clear();
+                    Object card = Mass.Data_find(card_selected);
+                    if(isEnough(card)){
+                        if(isMyTurn()){
+                            setMyTurn(false);
+                            Mass.delete(card);
+                            update_cards();
+                            try {
+                                sendMessage(card);
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
+
+
+
             }
         });
         btncarta.setFont(new Font(15));
@@ -615,15 +614,19 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 }
             }
             if(Inmessage!=null){
-                System.out.println(Inmessage);
-                try{
-                    JsonNode node = json.parsing(Inmessage);
-                    Message message = new Message(node.get("type").textValue(),node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
-                    Action_received(message.getAction(), message.getAttack());
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                if (Inmessage.equals("null")) {
+                    setMyTurn(true);
+                    this.Inmessage = null;
+                }else{
+                    try {
+                        JsonNode node = json.parsing(Inmessage);
+                        Message message = new Message(node.get("type").textValue(), node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                        Action_received(message.getAction(), message.getAttack());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    this.Inmessage = null;
                 }
-                this.Inmessage = null;
                 setMyTurn(true);
             }
         }
