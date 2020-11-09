@@ -87,79 +87,79 @@ public class Initial_cards {
                         All_Cards.insertFirst(henchman);
                         break;
                     case 18:
-                        Spell spell = new Spell(200, "r_damage", this.rute + "Spells/Spell_1");
+                        Spell spell = new Spell(0, "r_damage", this.rute + "Spells/Spell_1");
                         All_Cards.insertFirst(spell);
                         break;
                     case 19:
-                        spell = new Spell(200, "v_+50%", this.rute + "Spells/Spell_2");
+                        spell = new Spell(0, "v_+50%", this.rute + "Spells/Spell_2");
                         All_Cards.insertFirst(spell);
                         break;
                     case 20:
-                        spell = new Spell(200, "p_4cards", this.rute + "Spells/Spell_3");
+                        spell = new Spell(0, "p_4cards", this.rute + "Spells/Spell_3");
                         All_Cards.insertFirst(spell);
                         break;
                     case 21:
-                        spell = new Spell(200, "r_card", this.rute + "Spells/Spell_4");
+                        spell = new Spell(0, "r_card", this.rute + "Spells/Spell_4");
                         All_Cards.insertFirst(spell);
                         break;
                     case 22:
-                        spell = new Spell(200, "s_card", this.rute + "Spells/Spell_5");
+                        spell = new Spell(0, "s_card", this.rute + "Spells/Spell_5");
                         All_Cards.insertFirst(spell);
                         break;
                     case 23:
-                        spell = new Spell(200,"shield", this.rute + "Spells/Spell_6");
+                        spell = new Spell(0,"shield", this.rute + "Spells/Spell_6");
                         All_Cards.insertFirst(spell);
                         break;
                     case 24:
-                        spell = new Spell(200, "freeze_x1", this.rute + "Spells/Spell_7");
+                        spell = new Spell(0, "freeze_x1", this.rute + "Spells/Spell_7");
                         All_Cards.insertFirst(spell);
                         break;
                     case 25:
-                        spell = new Spell(200, "-damage", this.rute + "Spells/Spell_8");
+                        spell = new Spell(0, "-damage", this.rute + "Spells/Spell_8");
                         All_Cards.insertFirst(spell);
                         break;
                     case 26:
-                        spell = new Spell(200, "freeze_x2", this.rute + "Spells/Spell_9");
+                        spell = new Spell(0, "freeze_x2", this.rute + "Spells/Spell_9");
                         All_Cards.insertFirst(spell);
                         break;
                     case 27:
-                        spell = new Spell(200, "n_shield", this.rute + "Spells/Spell_10");
+                        spell = new Spell(0, "n_shield", this.rute + "Spells/Spell_10");
                         All_Cards.insertFirst(spell);
                         break;
                     case 28:
-                        spell = new Spell(200, "v_+25%", this.rute + "Spells/Spell_11");
+                        spell = new Spell(0, "v_+25%", this.rute + "Spells/Spell_11");
                         All_Cards.insertFirst(spell);
                         break;
                     case 29:
-                        spell = new Spell(200, "+100m", this.rute + "Spells/Spell_12");
+                        spell = new Spell(0, "+100m", this.rute + "Spells/Spell_12");
                         All_Cards.insertFirst(spell);
                         break;
                     case 30:
-                        Secret secret = new Secret(300, "-10%", this.rute + "Secrets/Secret1");
+                        Secret secret = new Secret(0, "-10%", this.rute + "Secrets/Secret1");
                         All_Cards.insertFirst(secret);
                         break;
                     case 31:
-                        secret = new Secret(300, "-10%m", this.rute + "Secrets/Secret2");
+                        secret = new Secret(0, "-10%m", this.rute + "Secrets/Secret2");
                         All_Cards.insertFirst(secret);
                         break;
                     case 32:
-                        secret = new Secret(300, "-30%", this.rute + "Secrets/Secret3");
+                        secret = new Secret(0, "-30%", this.rute + "Secrets/Secret3");
                         All_Cards.insertFirst(secret);
                         break;
                     case 33:
-                        secret = new Secret(300, "d_card", this.rute + "Secrets/Secret4");
+                        secret = new Secret(0, "d_card", this.rute + "Secrets/Secret4");
                         All_Cards.insertFirst(secret);
                         break;
                     case 34:
-                        secret = new Secret(300, "+lastM", this.rute + "Secrets/Secret5");
+                        secret = new Secret(0, "+lastM", this.rute + "Secrets/Secret5");
                         All_Cards.insertFirst(secret);
                         break;
                     case 35:
-                        secret = new Secret(300, "E_250", this.rute + "Secrets/Secret6");
+                        secret = new Secret(0, "E_250", this.rute + "Secrets/Secret6");
                         All_Cards.insertFirst(secret);
                         break;
                     case 36:
-                        secret = new Secret(300, "doubleM", this.rute + "Secrets/Secret7");
+                        secret = new Secret(0, "doubleM", this.rute + "Secrets/Secret7");
                         All_Cards.insertFirst(secret);
                         break;
                     case 37:
@@ -167,15 +167,15 @@ public class Initial_cards {
                         All_Cards.insertFirst(secret);
                         break;
                     case 38:
-                        spell = new Spell(200, "p_3cards", this.rute + "Spells/Spell_13");
+                        spell = new Spell(0, "p_3cards", this.rute + "Spells/Spell_13");
                         All_Cards.insertFirst(spell);
                         break;
                     case 39:
-                        secret = new Secret(300, "c_mass", this.rute + "Secrets/Secret9");
+                        secret = new Secret(0, "c_mass", this.rute + "Secrets/Secret9");
                         All_Cards.insertFirst(secret);
                         break;
                     case 40:
-                        secret = new Secret(300, "n_damage", this.rute + "Secrets/Secret10");
+                        secret = new Secret(0, "n_damage", this.rute + "Secrets/Secret10");
                         All_Cards.insertFirst(secret);
                         break;
                 }

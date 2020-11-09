@@ -59,8 +59,10 @@ public class App extends Application implements EventHandler<javafx.event.Action
     private int E_250;
     private int mana_p;
     private double p_damage;
+    private Stage stage;
 
     public App(String type, int port, String name) throws Exception {
+        this.stage = null;
         this.p_damage = 1;
         this.mana_p = 50;
         this.E_250 = 0;
@@ -115,6 +117,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
     }
     @Override
     public void start(Stage primaryStage) {
+        this.stage = primaryStage;
         Label L_User = new Label("Name: " + this.name);
         L_User.setFont(new Font(25));
         L_User.setTextFill(Color.web("#FFFFFF"));
@@ -498,6 +501,18 @@ public class App extends Application implements EventHandler<javafx.event.Action
             }
         }
     }
+
+    public void win(String result){
+        GameOver gameOver = new GameOver(result, name);
+        gameOver.start(this.stage);
+        if(result.equals("LOSER")){
+            if(type == "server"){
+                server.SendMessage("WINNER");
+            }else{
+                client.SendMessage("WINNER");
+            }
+        }
+    }
     @Override
     public void handle(ActionEvent event) { }
     public boolean isActive(){return this.active;}
@@ -626,6 +641,9 @@ public class App extends Application implements EventHandler<javafx.event.Action
         }else{
             if(damage>E_250){
                 if((this.life-(damage))<=1000){
+                    if ((this.life-(damage))<= 0){
+                        win("LOSER");
+                    }
                     System.out.println("IF Damage " + this.type);
                     this.life -= damage;
                     this.f_life = this.life/1000;
@@ -695,7 +713,15 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     });
                     if (Inmessage.equals("null")) {
                         setMyTurn(true);
-                    } else {
+                    }if(Inmessage.equals("WINNER")){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                win("WINNER");
+                            }
+                        });
+
+                    }else {
                         try {
                             JsonNode node = json.parsing(Inmessage);
                             Message message = new Message(node.get("type").textValue(), node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
