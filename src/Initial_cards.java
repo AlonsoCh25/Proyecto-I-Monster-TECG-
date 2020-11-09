@@ -163,7 +163,7 @@ public class Initial_cards {
                         All_Cards.insertFirst(secret);
                         break;
                     case 37:
-                        secret = new Secret(300, "big_damage", this.rute + "Secrets/Secret8");
+                        secret = new Secret(0, "big_damage", this.rute + "Secrets/Secret8");
                         All_Cards.insertFirst(secret);
                         break;
                     case 38:

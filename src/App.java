@@ -52,8 +52,22 @@ public class App extends Application implements EventHandler<javafx.event.Action
     private HBox containerVidaAd;
     private HBox containerManaAd;
     private boolean isMyTurn;
+    private int LastDamage;
+    private boolean shield;
+    private int int_freeze;
+    private int p_mana;
+    private int E_250;
+    private int mana_p;
+    private double p_damage;
 
     public App(String type, int port, String name) throws Exception {
+        this.p_damage = 1;
+        this.mana_p = 50;
+        this.E_250 = 0;
+        this.p_mana = 50;
+        this.int_freeze = 0;
+        this.shield = false;
+        this.LastDamage = 0;
         this.containerVida = new HBox();
         this.containerMana = new HBox();
         this.containerVidaAd = new HBox();
@@ -215,29 +229,28 @@ public class App extends Application implements EventHandler<javafx.event.Action
         TextField textCarta = new TextField();
         textCarta.setFont(new Font(15));
         textCarta.setMaxWidth(200);
-        System.out.println(textCarta);
 
         Button btncarta = new Button("Lanzar");
         btncarta.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
             public void handle(javafx.event.ActionEvent event) {
-                int card_selected = Integer.parseInt(textCarta.getText());
-                if(card_selected == 0){
-                    if (type.equals("client")){
-                        setMyTurn(false);
+                if(isMyTurn()){
+                    int card_selected = Integer.parseInt(textCarta.getText());
+                    if(card_selected == 0){
+                        if (type.equals("client")){
+                            setMyTurn(false);
+                            textCarta.clear();
+                            client.SendMessage("null");
+                        }
+                        if(type.equals("server")){
+                            setMyTurn(false);
+                            textCarta.clear();
+                            server.SendMessage("null");
+                        }
+                    }else{
                         textCarta.clear();
-                        client.SendMessage("null");
-                    }
-                    if(type.equals("server")){
-                        setMyTurn(false);
-                        textCarta.clear();
-                        server.SendMessage("null");
-                    }
-                }else{
-                    textCarta.clear();
-                    Object card = Mass.Data_find(card_selected);
-                    if(isEnough(card)){
-                        if(isMyTurn()){
+                        Object card = Mass.Data_find(card_selected);
+                        if(isEnough(card)){
                             setMyTurn(false);
                             Mass.delete(card);
                             update_cards();
@@ -249,9 +262,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                         }
                     }
                 }
-
-
-
             }
         });
         btncarta.setFont(new Font(15));
@@ -290,43 +300,72 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
     }
 
+    public void setLastDamage(int lastDamage) {
+        LastDamage = lastDamage;
+    }
+
+    public void setInt_freeze(int int_freeze) {
+        if (int_freeze == 0){
+            setMyTurn(true);
+        }
+        this.int_freeze = int_freeze;
+    }
+
+    public void setE_250(int e_250) {
+        E_250 = e_250;
+    }
+
+    public void setMana_p(int mana_p) {
+        this.mana_p = mana_p;
+    }
+
+    public void setP_damage(double p_damage) {
+        this.p_damage = p_damage;
+    }
+
+    public void setShield(boolean shield) {
+        this.shield = shield;
+    }
+
+    public void setP_mana(int p_mana) {
+        this.p_mana = p_mana;
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
     //Acciones del que envia los mensajes
     public void Action_send(String action){
         switch (action){
-            case "-10%":
-                break;
-            case "-10m":
-                break;
-            case "-30%":
-                break;
             case "d_card":
                 break;
             case "+lastM":
-                //No Afecta al contrincante
+                setMana(p_mana);
+                setP_mana(0);
                 break;
             case "E_250":
-                //No Afecta al contrincante
+                setE_250(250);
                 break;
             case "doubleM":
-                //No Afecta al contrincante
+                setMana_p(this.mana_p*2);
                 break;
             case "big_damage":
+                setDamage(300);
                 break;
             case "c_mass":
                 break;
             case "n_damage":
-                //No Afecta al contrincante
+                setShield(true);
                 break;
             case "r_damage":
-                //No Afecta al contrincante
+                setDamage(-this.LastDamage);
+                setLastDamage(0);
                 break;
             case "v_+50%":
-                //No Afecta al contrincante
+                setDamage((int) -(this.life/2));
                 break;
             case "p_4cards":
+                setMyTurn(true);
                 //No Afecta al contrincante
                 break;
             case "r_card":
@@ -334,24 +373,29 @@ public class App extends Application implements EventHandler<javafx.event.Action
             case "s_card":
                 break;
             case "shield":
-                //No Afecta al contrincante
+                System.out.println("Shield " + type);
+                setShield(true);
                 break;
             case "freeze_x1":
+                System.out.println("Freeze 1 " + type);
+                setMyTurn(true);
                 break;
             case "-damage":
-                //No Afecta al contrincante
+                setP_damage(0.2);
                 break;
             case "freeze_x2":
-                break;
-            case "n_shield":
+                System.out.println("Freeze 2 " + type);
+                setMyTurn(true);
                 break;
             case "v_+25%":
-                //No Afecta al contrincante
+                setDamage((int) -(this.life/4));
                 break;
             case "+100m":
+                setMana(-100);
                 //No Afecta al contrincante
                 break;
             case "p_3cards":
+                setMyTurn(true);
                 //No Afecta al contrincante
                 break;
 
@@ -364,68 +408,92 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     @Override
                     public void run() {
                         setDamage(attack);
+                        setLastDamage(attack);
                     }
                 });
             }
-        }else{
-            switch (action){
+        }else {
+            switch (action) {
                 case "-10%":
+                    setDamage((int)(this.life*0.1));
                     break;
                 case "-10m":
+                    setDamage((int)(this.mana*0.1));
                     break;
                 case "-30%":
+                    setDamage((int)(this.life*0.3));
                     break;
                 case "d_card":
-                    break;
-                case "+lastM":
-                    //No Afecta al contrincante
-                    break;
-                case "E_250":
-                    //No Afecta al contrincante
-                    break;
-                case "doubleM":
-                    //No Afecta al contrincante
+                    setInt_freeze(2);
+                    if (this.type.equals("server")) {
+                        setMyTurn(false);
+                        server.SendMessage("null");
+                    } else {
+                        setMyTurn(false);
+                        client.SendMessage("null");
+                    }
                     break;
                 case "big_damage":
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            setDamage(600);
+                            setLastDamage(600);
+                        }
+                    });
+
                     break;
                 case "c_mass":
                     break;
                 case "n_damage":
                     //No Afecta al contrincante
                     break;
-                case "r_damage":
-                    //No Afecta al contrincante
-                    break;
-                case "v_+50%":
-                    //No Afecta al contrincante
-                    break;
                 case "p_4cards":
-                    //No Afecta al contrincante
+                    setInt_freeze(4);
+                    if (this.type.equals("server")) {
+                        setMyTurn(false);
+                        server.SendMessage("null");
+                    } else {
+                        setMyTurn(false);
+                        client.SendMessage("null");
+                    }
                     break;
                 case "r_card":
                     break;
                 case "s_card":
                     break;
-                case "shield":
-                    //No Afecta al contrincante
-                    break;
                 case "freeze_x1":
-                    break;
-                case "-damage":
-                    //No Afecta al contrincante
+                    System.out.println("freeze 1 " + type);
+                    if (this.type.equals("server")) {
+                        setMyTurn(false);
+                        server.SendMessage("null");
+                    } else {
+                        setMyTurn(false);
+                        client.SendMessage("null");
+                    }
                     break;
                 case "freeze_x2":
+                    System.out.println("freeze 2 " + type);
+                    setInt_freeze(2);
+                    if (this.type.equals("server")) {
+                        setMyTurn(false);
+                        server.SendMessage("null");
+                    } else {
+                        setMyTurn(false);
+                        client.SendMessage("null");
+                    }
                     break;
                 case "n_shield":
                     break;
-                case "v_+25%":
-                    //No Afecta al contrincante
-                    break;
-                case "+100m":
-                    //No Afecta al contrincante
-                    break;
                 case "p_3cards":
-                    //No Afecta al contrincante
+                    setInt_freeze(3);
+                    if (this.type.equals("server")) {
+                        setMyTurn(false);
+                        server.SendMessage("null");
+                    } else {
+                        setMyTurn(false);
+                        client.SendMessage("null");
+                    }
                     break;
             }
         }
@@ -483,14 +551,12 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     setMana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
-
             }
             if(type == "server"){
                 if(data.getClass() == Secret.class){
                     message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
-                    System.out.println(((Secret) data).getMana());
                     setMana(((Secret) data).getMana());
                     setMyTurn(false);
                 }
@@ -498,7 +564,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     message = new Message("Henchmen", "null", ((Henchmen) data).getMana(), ((Henchmen) data).getAttack());
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
-                    System.out.println(((Henchmen) data).getMana());
                     setMana(((Henchmen) data).getMana());
                     setMyTurn(false);
                 }
@@ -506,7 +571,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     message = new Message("Spell", ((Spell) data).getAction(), ((Spell) data).getMana(),0);
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
-                    System.out.println(((Spell) data).getMana());
                     setMana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
@@ -534,6 +598,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
         }
     }
     public void setMana(int mana){
+        setP_mana(mana);
         this.mana -= mana;
         this.f_mana = this.mana/1000;
         this.containerMana.getChildren().remove(BarMana);
@@ -554,44 +619,50 @@ public class App extends Application implements EventHandler<javafx.event.Action
         containerMana.setAlignment(Pos.TOP_LEFT);
     }
     public void setDamage(int damage){
-        if((this.life-(damage))<=1000){
-            System.out.println("IF " + this.type);
-            this.life -= damage;
-            this.f_life = this.life/1000;
-            this.containerVida.getChildren().remove(BarVida);
-            this.containerVida.getChildren().remove(labelvidaAd);
-            this.containerVida.getChildren().remove(BarVidaAd);
-            this.BarVida = new ProgressBar(f_life);
-            this.labelvidaAd = new Label("Life Adversary");
-            this.labelvidaAd.setFont(new Font(30));
-            this.labelvidaAd.setTextFill(Color.web("#008000"));
-            this.BarVidaAd = new ProgressBar(f_lifead);
-            this.BarVida.setMinWidth(500);
-            this.BarVidaAd.setMinWidth(100);
-            HBox.setMargin(BarVida,new Insets(20,250,0,0));
-            HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
-            HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
-            this.containerVida.getChildren().addAll(BarVida,labelvidaAd,BarVidaAd);
-            containerVida.setPrefWidth(200);
-            containerVida.setAlignment(Pos.TOP_LEFT);
+        damage = (int) (damage*p_damage);
+        System.out.println(this.shield + " " + type);
+        if(this.shield) {
+            setShield(false);
         }else{
-            System.out.println("Else");
-            this.life = 1000;
-            this.f_life = this.life/1000;
-            this.containerVida.getChildren().remove(BarVida);
-            this.containerVida.getChildren().remove(labelvidaAd);
-            this.containerVida.getChildren().remove(BarVidaAd);
-            this.BarVida = new ProgressBar(f_life);
-            this.labelvidaAd = new Label("Life Adversary");
-            this.labelvidaAd.setFont(new Font(30));
-            this.labelvidaAd.setTextFill(Color.web("#008000"));
-            this.BarVidaAd = new ProgressBar(f_lifead);
-            this.BarVida.setMinWidth(500);
-            this.BarVidaAd.setMinWidth(100);
-            HBox.setMargin(BarVida,new Insets(20,250,0,0));
-            HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
-            HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
-            this.containerVida.getChildren().addAll(BarVida,BarVidaAd);
+            if(damage>E_250){
+                if((this.life-(damage))<=1000){
+                    System.out.println("IF Damage " + this.type);
+                    this.life -= damage;
+                    this.f_life = this.life/1000;
+                    this.containerVida.getChildren().remove(BarVida);
+                    this.containerVida.getChildren().remove(labelvidaAd);
+                    this.containerVida.getChildren().remove(BarVidaAd);
+                    this.BarVida = new ProgressBar(f_life);
+                    this.labelvidaAd = new Label("Life Adversary");
+                    this.labelvidaAd.setFont(new Font(30));
+                    this.labelvidaAd.setTextFill(Color.web("#008000"));
+                    this.BarVidaAd = new ProgressBar(f_lifead);
+                    this.BarVida.setMinWidth(500);
+                    this.BarVidaAd.setMinWidth(100);
+                    HBox.setMargin(BarVida,new Insets(20,250,0,0));
+                    HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
+                    HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
+                    this.containerVida.getChildren().addAll(BarVida,labelvidaAd,BarVidaAd);
+                }else{
+                    System.out.println("Else Damage" + type);
+                    this.life = 1000;
+                    this.f_life = this.life/1000;
+                    this.containerVida.getChildren().remove(BarVida);
+                    this.containerVida.getChildren().remove(labelvidaAd);
+                    this.containerVida.getChildren().remove(BarVidaAd);
+                    this.BarVida = new ProgressBar(f_life);
+                    this.labelvidaAd = new Label("Life Adversary");
+                    this.labelvidaAd.setFont(new Font(30));
+                    this.labelvidaAd.setTextFill(Color.web("#008000"));
+                    this.BarVidaAd = new ProgressBar(f_lifead);
+                    this.BarVida.setMinWidth(500);
+                    this.BarVidaAd.setMinWidth(100);
+                    HBox.setMargin(BarVida,new Insets(20,250,0,0));
+                    HBox.setMargin(labelvidaAd, new Insets(10,30,0,0));
+                    HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
+                    this.containerVida.getChildren().addAll(BarVida,BarVidaAd);
+                }
+            }
             containerVida.setPrefWidth(200);
             containerVida.setAlignment(Pos.TOP_LEFT);
         }
@@ -599,36 +670,54 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
     }
     public void receive_message(){
-        while (isActive()){
+        while (isActive()) {
             Json json = new Json();
-            if(type.equals("client")) {
+            if (type.equals("client")) {
                 if (this.client.getInMessage() != null) {
                     this.Inmessage = this.client.getInMessage();
                     this.client.setInMessage(null);
                 }
             }
-            if(type.equals("server")){
-                if(this.server.getInMessage() != null) {
+            if (type.equals("server")) {
+                if (this.server.getInMessage() != null) {
                     this.Inmessage = this.server.getInMessage();
                     this.server.setInMessage(null);
                 }
             }
-            if(Inmessage!=null){
-                if (Inmessage.equals("null")) {
-                    setMyTurn(true);
-                    this.Inmessage = null;
-                }else{
-                    try {
-                        JsonNode node = json.parsing(Inmessage);
-                        Message message = new Message(node.get("type").textValue(), node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
-                        Action_received(message.getAction(), message.getAttack());
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+            if (Inmessage != null) {
+                if (this.int_freeze == 0) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            setMana(mana_p);
+                            setMana_p(50);
+                        }
+                    });
+                    if (Inmessage.equals("null")) {
+                        setMyTurn(true);
+                    } else {
+                        try {
+                            JsonNode node = json.parsing(Inmessage);
+                            Message message = new Message(node.get("type").textValue(), node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                            Action_received(message.getAction(), message.getAttack());
+                            setMyTurn(true);
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    this.Inmessage = null;
+                } else {
+                    System.out.println("Im Freeze " + type);
+                    setInt_freeze(this.int_freeze - 1);
+                    setMyTurn(false);
+                    if (type == "server") {
+                        server.SendMessage("null");
+                    } else {
+                        client.SendMessage("null");
+                    }
                 }
-                setMyTurn(true);
             }
+            this.Inmessage = null;
+
         }
     }
     public boolean isMyTurn() {
