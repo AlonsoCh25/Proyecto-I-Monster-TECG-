@@ -40,6 +40,7 @@ public class game_history extends Application implements EventHandler<ActionEven
 
         Label L_history = new Label((String) this.history.Data_find(1));
         L_history.setFont(new Font(20));
+        L_history.setMaxWidth(400);
         L_history.setTextFill(Color.web("#F8F8FF"));
 
 
@@ -135,6 +136,7 @@ public class game_history extends Application implements EventHandler<ActionEven
             Label L_history = new Label((String) this.history.Data_find(this.position));
             L_history.setFont(new Font(20));
             L_history.setTextFill(Color.web("#F8F8FF"));
+            L_history.setMaxWidth(400);
             c_container.getChildren().add(L_history);
         }else{
             this.position--;
@@ -143,11 +145,13 @@ public class game_history extends Application implements EventHandler<ActionEven
                 Label L_history = new Label((String) this.history.Data_find(this.position));
                 L_history.setFont(new Font(20));
                 L_history.setTextFill(Color.web("#F8F8FF"));
+                L_history.setMaxWidth(400);
                 c_container.getChildren().add(L_history);
             }else{
                 Label L_history = new Label((String) this.history.Data_find(this.position));
                 L_history.setFont(new Font(20));
                 L_history.setTextFill(Color.web("#F8F8FF"));
+                L_history.setMaxWidth(400);
                 c_container.getChildren().add(L_history);
             }
         }
