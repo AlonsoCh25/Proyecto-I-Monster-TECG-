@@ -23,12 +23,12 @@ public class Initial_cards {
                         All_Cards.insertFirst(henchman);
                         break;
                     case 2:
-                        henchman = new Henchmen(100, 75, this.rute + "Henchmen/henchman_2");
-                        All_Cards.insertFirst(henchman);
+                        Secret secret = new Secret(0, "-10%", this.rute + "Secrets/Secret1");
+                        All_Cards.insertFirst(secret);
                         break;
                     case 3:
-                        henchman = new Henchmen(125, 100, this.rute + "Henchmen/henchman_3");
-                        All_Cards.insertFirst(henchman);
+                        Spell spell = new Spell(0, "r_damage", this.rute + "Spells/Spell_1");
+                        All_Cards.insertFirst(spell);
                         break;
                     case 4:
                         henchman = new Henchmen(150, 125, this.rute + "Henchmen/henchman_4");
@@ -87,24 +87,25 @@ public class Initial_cards {
                         All_Cards.insertFirst(henchman);
                         break;
                     case 18:
-                        Spell spell = new Spell(0, "r_damage", this.rute + "Spells/Spell_1");
-                        All_Cards.insertFirst(spell);
+                        henchman = new Henchmen(125, 100, this.rute + "Henchmen/henchman_3");
+                        All_Cards.insertFirst(henchman);
                         break;
                     case 19:
                         spell = new Spell(0, "v_+50%", this.rute + "Spells/Spell_2");
                         All_Cards.insertFirst(spell);
                         break;
                     case 20:
-                        spell = new Spell(0, "p_4cards", this.rute + "Spells/Spell_3");
-                        All_Cards.insertFirst(spell);
+                        secret = new Secret(0, "n_damage", this.rute + "Secrets/Secret10");
+                        All_Cards.insertFirst(secret);
                         break;
+
                     case 21:
-                        spell = new Spell(0, "r_card", this.rute + "Spells/Spell_4");
-                        All_Cards.insertFirst(spell);
+                        henchman = new Henchmen(475, 450, this.rute + "Henchmen/henchman_18");
+                        All_Cards.insertFirst(henchman);
                         break;
                     case 22:
-                        spell = new Spell(0, "s_card", this.rute + "Spells/Spell_5");
-                        All_Cards.insertFirst(spell);
+                        henchman = new Henchmen(525, 500, this.rute + "Henchmen/henchman_19");
+                        All_Cards.insertFirst(henchman);
                         break;
                     case 23:
                         spell = new Spell(0,"shield", this.rute + "Spells/Spell_6");
@@ -119,12 +120,12 @@ public class Initial_cards {
                         All_Cards.insertFirst(spell);
                         break;
                     case 26:
-                        spell = new Spell(0, "freeze_x2", this.rute + "Spells/Spell_9");
-                        All_Cards.insertFirst(spell);
+                        secret = new Secret(0, "c_mass", this.rute + "Secrets/Secret9");
+                        All_Cards.insertFirst(secret);
                         break;
                     case 27:
-                        spell = new Spell(0, "n_shield", this.rute + "Spells/Spell_10");
-                        All_Cards.insertFirst(spell);
+                        henchman = new Henchmen(500, 475, this.rute + "Henchmen/henchman_20");
+                        All_Cards.insertFirst(henchman);
                         break;
                     case 28:
                         spell = new Spell(0, "v_+25%", this.rute + "Spells/Spell_11");
@@ -135,8 +136,8 @@ public class Initial_cards {
                         All_Cards.insertFirst(spell);
                         break;
                     case 30:
-                        Secret secret = new Secret(0, "-10%", this.rute + "Secrets/Secret1");
-                        All_Cards.insertFirst(secret);
+                        henchman = new Henchmen(100, 75, this.rute + "Henchmen/henchman_2");
+                        All_Cards.insertFirst(henchman);
                         break;
                     case 31:
                         secret = new Secret(0, "-10%m", this.rute + "Secrets/Secret2");
@@ -147,7 +148,7 @@ public class Initial_cards {
                         All_Cards.insertFirst(secret);
                         break;
                     case 33:
-                        secret = new Secret(0, "d_card", this.rute + "Secrets/Secret4");
+                        secret = new Secret(0, "big_damage", this.rute + "Secrets/Secret8");
                         All_Cards.insertFirst(secret);
                         break;
                     case 34:
@@ -163,7 +164,7 @@ public class Initial_cards {
                         All_Cards.insertFirst(secret);
                         break;
                     case 37:
-                        secret = new Secret(0, "big_damage", this.rute + "Secrets/Secret8");
+                        secret = new Secret(0, "d_card", this.rute + "Secrets/Secret4");
                         All_Cards.insertFirst(secret);
                         break;
                     case 38:
@@ -171,24 +172,26 @@ public class Initial_cards {
                         All_Cards.insertFirst(spell);
                         break;
                     case 39:
-                        secret = new Secret(0, "c_mass", this.rute + "Secrets/Secret9");
-                        All_Cards.insertFirst(secret);
+                        spell = new Spell(0, "freeze_x2", this.rute + "Spells/Spell_9");
+                        All_Cards.insertFirst(spell);
                         break;
                     case 40:
-                        secret = new Secret(0, "n_damage", this.rute + "Secrets/Secret10");
-                        All_Cards.insertFirst(secret);
+                        spell = new Spell(0, "p_4cards", this.rute + "Spells/Spell_3");
+                        All_Cards.insertFirst(spell);
                         break;
                 }
         }
     }
     public void create_Deck() throws Exception {
         for(int i = 0; i<16; i++){
-            Deck.push(All_Cards.Data_find((int) (Math.random() * 40) + 1));
+            int random = ((int) (Math.random() * 36) + 1);
+            Deck.push(All_Cards.Data_find(random));
         }
     }
     public void create_Mass(){
-        for(int i = 0; i<4; i++){ ;
-            Mass.insertFirst(All_Cards.Data_find((int) (Math.random() * 40) + 1));
+        for(int i = 0; i<4; i++){
+            int random = ((int) (Math.random() * 36) + 1);
+            Mass.insertFirst(All_Cards.Data_find(random));
         }
     }
     public DoubleCircularList getMass() {

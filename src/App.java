@@ -76,7 +76,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
         this.containerManaAd = new HBox();
         this.type = type;
         this.name = name;
-        this.mana = 1000;
+        this.mana = 200;
         this.f_mana = mana/1000;
         this.life = 1000;
         this.f_life = life/1000;
@@ -337,13 +337,12 @@ public class App extends Application implements EventHandler<javafx.event.Action
     public static void main(String[] args) {
         launch(args);
     }
-    //Acciones del que envia los mensajes
     public void Action_send(String action){
         switch (action){
             case "d_card":
                 break;
             case "+lastM":
-                setMana(p_mana);
+                setMana(-p_mana);
                 setP_mana(0);
                 break;
             case "E_250":
@@ -353,9 +352,24 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 setMana_p(this.mana_p*2);
                 break;
             case "big_damage":
-                setDamage(300);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setDamage(300);
+                        setLastDamage(300);
+                    }
+                });
+
                 break;
             case "c_mass":
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        setDamage(150);
+                        setLastDamage(150);
+                    }
+                });
+                setDamage(150);
                 break;
             case "n_damage":
                 setShield(true);
@@ -369,25 +383,17 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 break;
             case "p_4cards":
                 setMyTurn(true);
-                //No Afecta al contrincante
-                break;
-            case "r_card":
-                break;
-            case "s_card":
                 break;
             case "shield":
-                System.out.println("Shield " + type);
                 setShield(true);
                 break;
             case "freeze_x1":
-                System.out.println("Freeze 1 " + type);
                 setMyTurn(true);
                 break;
             case "-damage":
                 setP_damage(0.2);
                 break;
             case "freeze_x2":
-                System.out.println("Freeze 2 " + type);
                 setMyTurn(true);
                 break;
             case "v_+25%":
@@ -395,11 +401,9 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 break;
             case "+100m":
                 setMana(-100);
-                //No Afecta al contrincante
                 break;
             case "p_3cards":
                 setMyTurn(true);
-                //No Afecta al contrincante
                 break;
 
             }
@@ -418,13 +422,29 @@ public class App extends Application implements EventHandler<javafx.event.Action
         }else {
             switch (action) {
                 case "-10%":
-                    setDamage((int)(this.life*0.1));
+                    int d = (int)(this.life*0.1);
+                    Platform.runLater(new Runnable() {
+                        public void run() {
+                            setDamage(d);
+                        }
+                    });
                     break;
                 case "-10m":
-                    setDamage((int)(this.mana*0.1));
+                    int m = (int)(this.mana*0.1);
+
+                    Platform.runLater(new Runnable() {
+                        public void run() {
+                            setMana(m);
+                        }
+                    });
                     break;
                 case "-30%":
-                    setDamage((int)(this.life*0.3));
+                    int x = (int)(this.life*0.3);
+                    Platform.runLater(new Runnable() {
+                        public void run() {
+                            setDamage(x);
+                        }
+                    });
                     break;
                 case "d_card":
                     setInt_freeze(2);
@@ -447,6 +467,13 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
                     break;
                 case "c_mass":
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            setDamage(300);
+                            setLastDamage(300);
+                        }
+                    });
                     break;
                 case "n_damage":
                     //No Afecta al contrincante
@@ -461,12 +488,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                         client.SendMessage("null");
                     }
                     break;
-                case "r_card":
-                    break;
-                case "s_card":
-                    break;
                 case "freeze_x1":
-                    System.out.println("freeze 1 " + type);
                     if (this.type.equals("server")) {
                         setMyTurn(false);
                         server.SendMessage("null");
@@ -476,7 +498,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     }
                     break;
                 case "freeze_x2":
-                    System.out.println("freeze 2 " + type);
                     setInt_freeze(2);
                     if (this.type.equals("server")) {
                         setMyTurn(false);
@@ -485,8 +506,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                         setMyTurn(false);
                         client.SendMessage("null");
                     }
-                    break;
-                case "n_shield":
                     break;
                 case "p_3cards":
                     setInt_freeze(3);
@@ -542,6 +561,13 @@ public class App extends Application implements EventHandler<javafx.event.Action
         return false;
     }
     public void sendMessage(Object data) throws JsonProcessingException {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                setMana(-mana_p);
+                setMana_p(50);
+            }
+        });
         Json json = new Json();
         Message message;
             if(type == "client"){
@@ -550,6 +576,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     client.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Secret) data).getMana());
+                    setP_mana(((Secret) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Henchmen.class){
@@ -557,6 +584,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     client.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Henchmen) data).getMana());
+                    setP_mana(((Henchmen) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Spell.class){
@@ -564,6 +592,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     client.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Spell) data).getMana());
+                    setP_mana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
             }
@@ -573,6 +602,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Secret) data).getMana());
+                    setP_mana(((Secret) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Henchmen.class){
@@ -580,6 +610,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Henchmen) data).getMana());
+                    setP_mana(((Henchmen) data).getMana());
                     setMyTurn(false);
                 }
                 if(data.getClass() == Spell.class){
@@ -587,6 +618,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     server.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Spell) data).getMana());
+                    setP_mana(((Spell) data).getMana());
                     setMyTurn(false);
                 }
         }
@@ -613,7 +645,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
         }
     }
     public void setMana(int mana){
-        setP_mana(mana);
+
         this.mana -= mana;
         this.f_mana = this.mana/1000;
         this.containerMana.getChildren().remove(BarMana);
@@ -635,7 +667,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
     }
     public void setDamage(int damage){
         damage = (int) (damage*p_damage);
-        System.out.println(this.shield + " " + type);
         if(this.shield) {
             setShield(false);
         }else{
@@ -644,7 +675,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     if ((this.life-(damage))<= 0){
                         win("LOSER");
                     }
-                    System.out.println("IF Damage " + this.type);
                     this.life -= damage;
                     this.f_life = this.life/1000;
                     this.containerVida.getChildren().remove(BarVida);
@@ -662,7 +692,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     HBox.setMargin(BarVidaAd, new Insets(25,0,0,0));
                     this.containerVida.getChildren().addAll(BarVida,labelvidaAd,BarVidaAd);
                 }else{
-                    System.out.println("Else Damage" + type);
                     this.life = 1000;
                     this.f_life = this.life/1000;
                     this.containerVida.getChildren().remove(BarVida);
@@ -704,45 +733,42 @@ public class App extends Application implements EventHandler<javafx.event.Action
             }
             if (Inmessage != null) {
                 if (this.int_freeze == 0) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            setMana(mana_p);
-                            setMana_p(50);
-                        }
-                    });
-                    if (Inmessage.equals("null")) {
+                    if (Inmessage.equals("null")){
                         setMyTurn(true);
-                    }if(Inmessage.equals("WINNER")){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                win("WINNER");
+                        this.Inmessage = null;
+                    }else{
+                        if(Inmessage.equals("WINNER")){
+                            this.Inmessage = null;
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    win("WINNER");
+                                }
+                            });
+                        }else {
+                            try {
+                                JsonNode node = json.parsing(Inmessage);
+                                Message message = new Message(node.get("type").textValue(), node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
+                                Action_received(message.getAction(), message.getAttack());
+                                setMyTurn(true);
+                                this.Inmessage = null;
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
                             }
-                        });
-
-                    }else {
-                        try {
-                            JsonNode node = json.parsing(Inmessage);
-                            Message message = new Message(node.get("type").textValue(), node.get("action").asText(), node.get("mana").asInt(), node.get("attack").asInt());
-                            Action_received(message.getAction(), message.getAttack());
-                            setMyTurn(true);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
                         }
                     }
                 } else {
-                    System.out.println("Im Freeze " + type);
                     setInt_freeze(this.int_freeze - 1);
                     setMyTurn(false);
-                    if (type == "server") {
+                    if(type == "server") {
                         server.SendMessage("null");
+                        this.Inmessage = null;
                     } else {
                         client.SendMessage("null");
+                        this.Inmessage = null;
                     }
-                }
+                }this.Inmessage = null;
             }
-            this.Inmessage = null;
 
         }
     }
