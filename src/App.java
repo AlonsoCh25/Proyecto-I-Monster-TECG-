@@ -448,31 +448,28 @@ public class App extends Application implements EventHandler<javafx.event.Action
             this.History.insertFirst("Received" +"\n"+ "User " + name + "\n" + "Action: " + action + "\n" + "Life: " + this.life + "\n" + "Mana: " + this.mana);
             switch (action) {
                 case "-10%":
-                    int d = (int)(this.life*0.1);
                     Platform.runLater(new Runnable() {
                         public void run() {
-                            setDamage(d);
+                            setDamage((int) (life*0.1));
                         }
                     });
                     break;
                 case "-10m":
-                    int m = (int)(this.mana*0.1);
-
                     Platform.runLater(new Runnable() {
                         public void run() {
-                            setMana(m);
+                            setMana((int) (mana*0.1));
                         }
                     });
                     break;
                 case "-30%":
-                    int x = (int)(this.life*0.3);
                     Platform.runLater(new Runnable() {
                         public void run() {
-                            setDamage(x);
+                            setDamage((int) (life*0.3));
                         }
                     });
                     break;
                 case "d_card":
+                case "freeze_x2":
                     setInt_freeze(2);
                     if (this.type.equals("server")) {
                         setMyTurn(false);
@@ -515,16 +512,6 @@ public class App extends Application implements EventHandler<javafx.event.Action
                     }
                     break;
                 case "freeze_x1":
-                    if (this.type.equals("server")) {
-                        setMyTurn(false);
-                        server.SendMessage("null");
-                    } else {
-                        setMyTurn(false);
-                        client.SendMessage("null");
-                    }
-                    break;
-                case "freeze_x2":
-                    setInt_freeze(2);
                     if (this.type.equals("server")) {
                         setMyTurn(false);
                         server.SendMessage("null");
