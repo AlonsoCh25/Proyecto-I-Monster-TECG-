@@ -2,7 +2,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-
+/**
+ * Client class for server management
+ */
 public class Client implements Runnable{
     private Socket Client;
     private String ipAddress;
@@ -38,7 +40,9 @@ public class Client implements Runnable{
     public void setInMessage(String inMessage) {
         this.InMessage = inMessage;
     }
-
+    /**
+     *method that runs the client's operation
+     */
     public void run() {
         while (this.Client == null){
             try{

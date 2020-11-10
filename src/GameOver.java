@@ -7,24 +7,31 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
+/**
+ * Its function is to repeat the game
+ */
 public class GameOver extends Application implements EventHandler<ActionEvent>{
     private String result;
     private String color;
     private String name;
+    private DoubleLinkedList history;
     public static void main(String[] args) {
         launch(args);
     }
-    public GameOver(String result, String name){
+    public GameOver(String result, String name, DoubleLinkedList history){
+        this.history = history;
         this.name = name;
         this.result = result;
     }
+    /**
+     * start conditions
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         if(result.equals("WINNER")){
@@ -43,6 +50,23 @@ public class GameOver extends Application implements EventHandler<ActionEvent>{
         Label labelName = new Label(result + " " + name);
         labelName.setFont(new Font(30));
         labelName.setTextFill(Color.web(color));
+        Button btnHistory = new Button("History");
+        btnHistory.setFont(new Font(20));
+        btnHistory.setPrefWidth(370);
+        btnHistory.setPrefHeight(44);
+        btnHistory.setMaxWidth(400);
+        btnHistory.setCursor(Cursor.HAND);
+        btnHistory.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    game_history g_history = new game_history(history);
+                    g_history.start(primaryStage);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         Button btnContinue = new Button("Continue");
         btnContinue.setFont(new Font(20));
@@ -63,7 +87,7 @@ public class GameOver extends Application implements EventHandler<ActionEvent>{
         });
 
 
-        containerconection.getChildren().addAll(labelName,btnContinue);
+        containerconection.getChildren().addAll(labelName,btnContinue, btnHistory);
         containerconection.setAlignment(Pos.TOP_CENTER);
 
         VBox.setMargin(labelName, new Insets(10, 0, 0, 0));

@@ -18,8 +18,9 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
-
+/**
+ * Definition of the variables necessary for the application
+ */
 public class App extends Application implements EventHandler<javafx.event.ActionEvent> {
     private Initial_cards InitCards;
     private DoubleLinkedList History;
@@ -60,8 +61,15 @@ public class App extends Application implements EventHandler<javafx.event.Action
     private int mana_p;
     private double p_damage;
     private Stage stage;
-
+    /**
+     * Class Constructor
+     * @param type type off card
+     * @param port port used by player2
+     * @param name name of player
+     * @throws Exception avoid mistakes
+     */
     public App(String type, int port, String name) throws Exception {
+        this.History = new DoubleLinkedList();
         this.stage = null;
         this.p_damage = 1;
         this.mana_p = 50;
@@ -91,6 +99,9 @@ public class App extends Application implements EventHandler<javafx.event.Action
         this.BarVida = new ProgressBar(f_life);
         this.BarManaAd = new ProgressBar(f_manaad);
         this.BarVidaAd = new ProgressBar(f_lifead);
+        /**
+         * Client server conditions
+         */
         if(type == "client"){
             this.isMyTurn = true;
             this.client = new Client("127.0.0.1", this.port);
@@ -115,6 +126,10 @@ public class App extends Application implements EventHandler<javafx.event.Action
         this.Mass = InitCards.getMass();
         this.containermanocartas = new FlowPane();
     }
+    /**
+     * method that starts the App
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         this.stage = primaryStage;
@@ -240,6 +255,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 if(isMyTurn()){
                     int card_selected = Integer.parseInt(textCarta.getText());
                     if(card_selected == 0){
+                        setMana(-mana_p);
                         if (type.equals("client")){
                             setMyTurn(false);
                             textCarta.clear();
@@ -303,6 +319,9 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
     }
 
+    /**
+     * Setters method
+     */
     public void setLastDamage(int lastDamage) {
         LastDamage = lastDamage;
     }
@@ -334,10 +353,15 @@ public class App extends Application implements EventHandler<javafx.event.Action
         this.p_mana = p_mana;
     }
 
+    /**
+     * Instantiation of the letters to be used with the action of forwarding and receiving
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }
     public void Action_send(String action){
+        History.insertFirst("Send" + "\n" + "User " + name + "\n" + "Action: " + action + "\n" + "Life: " + this.life + "\n" + "Mana: " + this.mana);
         switch (action){
             case "d_card":
                 break;
@@ -410,6 +434,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
     }
     public void Action_received(String action, int attack){
         if(action.equals("null")){
+            this.History.insertFirst("Received" + "\n" + "User " + name + "\n" + "Action: " + "Attack" + "\n" + "Life: " + this.life + "\n" + "Mana: " + this.mana);
             if(attack > 0){
                 Platform.runLater(new Runnable() {
                     @Override
@@ -420,6 +445,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 });
             }
         }else {
+            this.History.insertFirst("Received" +"\n"+ "User " + name + "\n" + "Action: " + action + "\n" + "Life: " + this.life + "\n" + "Mana: " + this.mana);
             switch (action) {
                 case "-10%":
                     int d = (int)(this.life*0.1);
@@ -520,9 +546,12 @@ public class App extends Application implements EventHandler<javafx.event.Action
             }
         }
     }
-
+    /**
+     * WIN METHOD
+     * @param result
+     */
     public void win(String result){
-        GameOver gameOver = new GameOver(result, name);
+        GameOver gameOver = new GameOver(result, name, this.History);
         gameOver.start(this.stage);
         if(result.equals("LOSER")){
             if(type == "server"){
@@ -532,6 +561,10 @@ public class App extends Application implements EventHandler<javafx.event.Action
             }
         }
     }
+    /**
+     * It is in charge of verifying if it has enough mana to carry out the cost of the card
+     * @param event
+     */
     @Override
     public void handle(ActionEvent event) { }
     public boolean isActive(){return this.active;}
@@ -560,6 +593,11 @@ public class App extends Application implements EventHandler<javafx.event.Action
         }
         return false;
     }
+    /**
+     * Send the message from JSON where the letters are stored
+     * @param data
+     * @throws JsonProcessingException
+     */
     public void sendMessage(Object data) throws JsonProcessingException {
         Platform.runLater(new Runnable() {
             @Override
@@ -573,6 +611,7 @@ public class App extends Application implements EventHandler<javafx.event.Action
             if(type == "client"){
                 if(data.getClass() == Secret.class){
                     message = new Message("Secret", ((Secret) data).getAction(), ((Secret) data).getMana(), 0);
+
                     client.SendMessage(json.toJson(message));
                     Action_send(message.getAction());
                     setMana(((Secret) data).getMana());
@@ -623,6 +662,9 @@ public class App extends Application implements EventHandler<javafx.event.Action
                 }
         }
     }
+    /**
+     * keeps the cards constantly updated
+     */
     public void update_cards(){
         containermanocartas.getChildren().clear();
         for(int i = 1; this.Mass.size()>=i; i++){
@@ -716,6 +758,9 @@ public class App extends Application implements EventHandler<javafx.event.Action
 
 
     }
+    /**
+     * Conditions of passage to send message
+     */
     public void receive_message(){
         while (isActive()) {
             Json json = new Json();

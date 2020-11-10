@@ -1,7 +1,13 @@
+/**
+ * this list will be used for handling cards
+ */
 public class DoubleLinkedList {
     private Node head;
     private Node last;
     private int size;
+    /**
+     * Attributes
+     */
     public DoubleLinkedList() {
         this.head = null;
         this.last = null;

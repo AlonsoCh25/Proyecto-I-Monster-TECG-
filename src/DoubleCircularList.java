@@ -7,6 +7,10 @@ public class DoubleCircularList {
         this.last = null;
         this.size = 0;
     }
+    /**
+     * condition if list is empty
+     * @return
+     */
     public boolean isEmpty() {
         return this.head == null;
     }
@@ -39,6 +43,9 @@ public class DoubleCircularList {
         this.last = newNode;
         this.size++;
     }
+    /**
+     * important list details
+     */
     public void deleteFirst(){
         if(isEmpty() == false) {
             if (this.head == this.last) {
@@ -54,6 +61,9 @@ public class DoubleCircularList {
             }
         }
     }
+    /**
+     * delete the final item from the list
+     */
     public void deleteEnd(){
         if(isEmpty() == false){
             if(this.head == this.last){
@@ -69,6 +79,9 @@ public class DoubleCircularList {
             }
         }
     }
+    /**
+     * display the new list
+     */
     public void displayList() {
         Node current = this.head;
         if(size() > 1){

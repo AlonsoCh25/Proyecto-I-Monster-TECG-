@@ -1,3 +1,6 @@
+/**
+ *  Class card Henchmen
+ */
 public class Henchmen {
     private int attack;
     private int mana;
@@ -7,6 +10,10 @@ public class Henchmen {
         this.mana = mana;
         this.rute = rute;
     }
+    /**
+     * Getters and Setters of class
+     * @return
+     */
     public int getMana() {
         return mana;
     }

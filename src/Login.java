@@ -13,12 +13,17 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
+/**
+ * Executor class application area
+ */
 public class Login extends Application implements EventHandler<ActionEvent>{
     public static void main(String[] args) {
         launch(args);
     }
-
+    /**
+     * instantiate game start
+     * @param primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
         VBox containerLeft = new VBox();

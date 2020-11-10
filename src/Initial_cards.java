@@ -1,3 +1,6 @@
+/**
+ * starting hand of cards with their random added
+ */
 public class Initial_cards {
     private DoubleLinkedList All_Cards;
     private DoubleCircularList Mass;
@@ -15,8 +18,11 @@ public class Initial_cards {
         this.Secrets = 8;
         this.Spells = 12;
     }
+    /**
+     * constructor with attributes necessary for the creation of cards
+     */
     public void crete_All_cards(){
-        for(int i = 1; i<=40; i++){
+        for(int i = 1; i<=36; i++){
                 switch (i){
                     case 1:
                         Henchmen henchman = new Henchmen(75, 50, this.rute + "Henchmen/henchman_1");
@@ -182,6 +188,10 @@ public class Initial_cards {
                 }
         }
     }
+    /**
+     * create the card bank
+     * @throws Exception
+     */
     public void create_Deck() throws Exception {
         for(int i = 0; i<16; i++){
             int random = ((int) (Math.random() * 36) + 1);
