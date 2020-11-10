@@ -1,3 +1,6 @@
+/**
+ *  Class card Henchmen
+ */
 public class Secret {
     private String action;
     private int mana;

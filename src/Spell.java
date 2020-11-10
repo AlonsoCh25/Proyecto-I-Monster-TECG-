@@ -1,3 +1,6 @@
+/**
+ *  Class card Spell
+ */
 public class Spell {
     private String type;
     private String action;

@@ -1,7 +1,9 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+/**
+ *  Class Json for objects
+ */
 public class Json {
     private ObjectMapper ObjectMapper = new ObjectMapper();
 

@@ -1,3 +1,6 @@
+/**
+ *  Class Stack for linear data structures
+ */
 public class Stack {
     private int maxSize;
     private Object[] stackArray;

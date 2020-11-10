@@ -1,3 +1,8 @@
+/**
+ *  Class Node
+ *
+ *  To use in linear data structures
+ */
 public class Node {
     private Object data;
     private Node next;

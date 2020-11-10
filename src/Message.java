@@ -1,3 +1,8 @@
+/**
+ *  Class Message
+ *
+ *  To send Messages in sockets
+ */
 public class Message {
     private String type;
     private String action;

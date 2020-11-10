@@ -3,7 +3,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+/**
+ *  Class Server in socket
+ */
 public class Server implements Runnable{
     private int port;
     private ServerSocket Server;
